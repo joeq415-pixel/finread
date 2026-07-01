@@ -6080,4 +6080,12 @@ async function startServer() {
 // ── STATIC FILES (must come AFTER all API routes) ──────────────────────────────
 app.use(express.static(__dirname));
 
-startServer();
+// Start server locally, export app for Vercel serverless
+if (require.main === module) {
+  startServer();
+} else {
+  // For Vercel serverless, initialize database and export the app
+  initializeDatabase().catch(err => console.error('Database init failed:', err));
+}
+
+module.exports = app;
