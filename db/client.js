@@ -21,13 +21,16 @@ const db = {
   // Create a new user
   async createUser(email, passwordHash, name) {
     try {
+      console.log(`[DB] Creating user: ${email}`);
       const result = await sql`
         INSERT INTO users (email, password_hash, name)
         VALUES (${email}, ${passwordHash}, ${name})
         RETURNING id, email, name, created_at
       `;
+      console.log(`[DB] User created successfully: ${result.rows[0].id}`);
       return result.rows[0];
     } catch (error) {
+      console.error(`[DB] Error creating user: ${error.message}`);
       if (error.message.includes('duplicate key')) {
         throw new Error('User already exists');
       }
