@@ -406,11 +406,14 @@ async function setCachedXBRLData(ticker, accessionNumber, xbrlData) {
 
 function authMiddleware(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
+  console.log(`[AUTH] ${req.method} ${req.path} - Token: ${token ? 'present' : 'missing'}`);
   if (!token) return res.status(401).json({ error: 'No token provided' });
   try {
     req.user = jwt.verify(token, JWT_SECRET);
+    console.log(`[AUTH] Token verified for user: ${req.user.id}`);
     next();
-  } catch {
+  } catch (err) {
+    console.log(`[AUTH] Token verification failed: ${err.message}`);
     res.status(401).json({ error: 'Invalid or expired token' });
   }
 }
