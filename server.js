@@ -2451,7 +2451,21 @@ app.post('/api/analyze/edgar', authMiddleware, async (req, res) => {
 app.get('/api/account', authMiddleware, async (req, res) => {
   try {
     const user = await db.getUserById(req.user.id);
-    if (!user) return res.status(404).json({ error: 'Account not found' });
+
+    // If user not found in DB, use info from JWT token
+    if (!user) {
+      return res.json({
+        id: req.user.id,
+        email: req.user.email,
+        name: req.user.name,
+        tier: 'free',
+        isPro: false,
+        analysesThisMonth: 0,
+        monthlyLimit: FREE_MONTHLY_LIMIT,
+        hasBilling: false,
+        preferences: {},
+      });
+    }
 
     const subscription = await db.getSubscriptionByUserId(req.user.id);
 
