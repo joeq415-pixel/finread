@@ -450,7 +450,13 @@ async function checkTierAccess(userId, formType) {
     }
 
     const subscription = await db.getSubscriptionByUserId(userId);
-    const isPro = subscription?.plan_type === 'pro';
+
+    // Check if user is in free trial (5 days from subscription creation)
+    const isInTrial = subscription &&
+      subscription.created_at &&
+      new Date(subscription.created_at) > new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
+
+    const isPro = subscription?.plan_type === 'pro' || isInTrial;
     const tier = subscription?.plan_type || 'free';
 
     // Monthly cap is a hard block regardless of preview mode
@@ -498,7 +504,7 @@ app.post('/api/auth/register', async (req, res) => {
       name?.trim() || email.split('@')[0]
     );
 
-    // Create subscription record (free tier by default)
+    // Create subscription record (free tier with 5-day trial)
     await db.createSubscription(user.id, null, 'free');
 
     const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '30d' });
