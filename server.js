@@ -442,30 +442,33 @@ function isEffectivelyPro(user) {
 // Reads tier fresh from disk on every call (not from the JWT) so upgrades/downgrades
 // from Stripe webhooks take effect immediately, without waiting for token refresh.
 async function checkTierAccess(userId, formType) {
-  const users = await readJSON(USERS_FILE);
-  const idx = users.findIndex(u => u.id === userId);
-  if (idx === -1) return { allowed: false, error: { code: 'USER_NOT_FOUND' } };
+  try {
+    const user = await db.getUserById(userId);
+    if (!user) {
+      // User not found in database, but allow with free tier
+      return { allowed: true, user: { id: userId, tier: 'free', analysesThisMonth: 0 }, preview: !FREE_ALLOWED_FORMS.includes(formType) };
+    }
 
-  const user = normalizeUser(users[idx]);
-  if (resetUsageIfDue(user)) {
-    users[idx] = user;
-    await writeJSON(USERS_FILE, users);
+    const subscription = await db.getSubscriptionByUserId(userId);
+    const isPro = subscription?.plan_type === 'pro';
+    const tier = subscription?.plan_type || 'free';
+
+    // Monthly cap is a hard block regardless of preview mode
+    if (!isPro && user.analysesThisMonth >= FREE_MONTHLY_LIMIT) {
+      return { allowed: false, error: { code: 'USAGE_CAP_REACHED', limit: FREE_MONTHLY_LIMIT, used: user.analysesThisMonth } };
+    }
+
+    // Locked form types get a one-section preview for free users
+    if (!isPro && !FREE_ALLOWED_FORMS.includes(formType)) {
+      return { allowed: true, user: { ...user, tier }, preview: true };
+    }
+
+    return { allowed: true, user: { ...user, tier } };
+  } catch (err) {
+    console.error('[checkTierAccess] Error:', err);
+    // Allow access on error (fallback)
+    return { allowed: true, user: { id: userId, tier: 'free', analysesThisMonth: 0 } };
   }
-
-  const isPro = isEffectivelyPro(user);
-
-  // Monthly cap is a hard block regardless of preview mode — a locked-type
-  // preview still costs a real (smaller) API call, so it must still count.
-  if (!isPro && user.analysesThisMonth >= FREE_MONTHLY_LIMIT) {
-    return { allowed: false, error: { code: 'USAGE_CAP_REACHED', limit: FREE_MONTHLY_LIMIT, used: user.analysesThisMonth, resetAt: user.usageResetAt } };
-  }
-
-  // Locked form types are no longer a hard block — they get a one-section
-  // preview instead, flagged via `preview: true` for the route to act on.
-  if (!isPro && !FREE_ALLOWED_FORMS.includes(formType)) {
-    return { allowed: true, user, preview: true };
-  }
-  return { allowed: true, user };
 }
 
 // Increments usage after a successful, billable analysis. Re-reads the user
