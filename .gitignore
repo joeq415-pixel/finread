@@ -1,0 +1,62 @@
+# Environment variables - CRITICAL: Contains API keys and secrets
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+
+# OS files
+Thumbs.db
+.DS_Store
+*.pem
+*.key
+
+# Build outputs
+dist/
+build/
+*.tgz
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+.cache/
+
+# Database files (if using local db)
+*.db
+*.sqlite
+*.sqlite3
+
+# Sensitive files
+credentials.json
+*.key
+*.pem
+.aws/
+
+# Production environment files
+.env.production
+.env.production.local
+
+# Testing
+coverage/
+.nyc_output/
+
+# Package manager lock files (optional - include if you want consistent versions)
+# package-lock.json
+# yarn.lock

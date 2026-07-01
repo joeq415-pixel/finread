@@ -1,0 +1,82 @@
+{
+  "MSFT:0000950170-25-100235": {
+    "metrics": {
+      "revenue": null,
+      "netIncome": 101.832,
+      "operatingIncome": 128.528,
+      "grossProfit": 193.893,
+      "operatingCashFlow": 136.162,
+      "capex": 64.551,
+      "freeCashFlow": 71.611,
+      "totalAssets": 191.131,
+      "currentAssets": 191.131,
+      "totalLiabilities": 141.218,
+      "currentLiabilities": 141.218,
+      "equity": 343.479
+    },
+    "qaText": "=== MSFT Financial Data from 10-K ===\n\nBALANCE SHEET:\n- Total Assets: $191.1B\n- Current Assets: $191.1B\n- Total Liabilities: $141.2B\n- Current Liabilities: $141.2B\n- Stockholders' Equity: $343.5B\n\nINCOME STATEMENT:\n- Revenue: N/A\n- Gross Profit: $193.9B\n- Operating Income: $128.5B\n- Net Income: $101.8B\n\nCASH FLOW:\n- Operating Cash Flow: $136.2B\n- Capital Expenditures: $64.6B\n- Free Cash Flow: $71.6B\n\n",
+    "formType": "10-K",
+    "ticker": "MSFT",
+    "cachedAt": "2026-06-28T03:19:54.514Z"
+  },
+  "MSFT:0000950170-24-087843": {
+    "metrics": {
+      "revenue": null,
+      "netIncome": 88.136,
+      "operatingIncome": 109.433,
+      "grossProfit": 171.008,
+      "operatingCashFlow": 118.548,
+      "capex": 44.477,
+      "freeCashFlow": 74.071,
+      "totalAssets": 159.734,
+      "currentAssets": 159.734,
+      "totalLiabilities": 125.286,
+      "currentLiabilities": 125.286,
+      "equity": 268.477
+    },
+    "qaText": "=== MSFT Financial Data from 10-K ===\n\nBALANCE SHEET:\n- Total Assets: $159.7B\n- Current Assets: $159.7B\n- Total Liabilities: $125.3B\n- Current Liabilities: $125.3B\n- Stockholders' Equity: $268.5B\n\nINCOME STATEMENT:\n- Revenue: N/A\n- Gross Profit: $171.0B\n- Operating Income: $109.4B\n- Net Income: $88.1B\n\nCASH FLOW:\n- Operating Cash Flow: $118.5B\n- Capital Expenditures: $44.5B\n- Free Cash Flow: $74.1B\n\n",
+    "formType": "10-K",
+    "ticker": "MSFT",
+    "cachedAt": "2026-06-28T03:42:52.066Z"
+  },
+  "MSFT:0001193125-26-191507": {
+    "metrics": {
+      "revenue": null,
+      "netIncome": 31.778,
+      "operatingIncome": 38.398,
+      "grossProfit": 56.058,
+      "operatingCashFlow": 46.679,
+      "capex": 30.876,
+      "freeCashFlow": 15.803,
+      "totalAssets": 175.329,
+      "currentAssets": 175.329,
+      "totalLiabilities": 136.661,
+      "currentLiabilities": 136.661,
+      "equity": 414.367
+    },
+    "qaText": "=== MSFT Financial Data from 10-Q ===\n\nBALANCE SHEET:\n- Total Assets: $175.3B\n- Current Assets: $175.3B\n- Total Liabilities: $136.7B\n- Current Liabilities: $136.7B\n- Stockholders' Equity: $414.4B\n\nINCOME STATEMENT:\n- Revenue: N/A\n- Gross Profit: $56.1B\n- Operating Income: $38.4B\n- Net Income: $31.8B\n\nCASH FLOW:\n- Operating Cash Flow: $46.7B\n- Capital Expenditures: $30.9B\n- Free Cash Flow: $15.8B\n\n",
+    "formType": "10-Q",
+    "ticker": "MSFT",
+    "cachedAt": "2026-06-28T16:22:21.954Z"
+  },
+  "MSFT:0001193125-26-027207": {
+    "metrics": {
+      "revenue": null,
+      "netIncome": 38.458,
+      "operatingIncome": 38.275,
+      "grossProfit": 55.295,
+      "operatingCashFlow": 35.758,
+      "capex": 29.876,
+      "freeCashFlow": 5.8820000000000014,
+      "totalAssets": 180.19,
+      "currentAssets": 180.19,
+      "totalLiabilities": 130.005,
+      "currentLiabilities": 130.005,
+      "equity": 390.875
+    },
+    "qaText": "=== MSFT Financial Data from 10-Q ===\n\nBALANCE SHEET:\n- Total Assets: $180.2B\n- Current Assets: $180.2B\n- Total Liabilities: $130.0B\n- Current Liabilities: $130.0B\n- Stockholders' Equity: $390.9B\n\nINCOME STATEMENT:\n- Revenue: N/A\n- Gross Profit: $55.3B\n- Operating Income: $38.3B\n- Net Income: $38.5B\n\nCASH FLOW:\n- Operating Cash Flow: $35.8B\n- Capital Expenditures: $29.9B\n- Free Cash Flow: $5.9B\n\n",
+    "formType": "10-Q",
+    "ticker": "MSFT",
+    "cachedAt": "2026-06-30T02:53:47.383Z"
+  }
+}

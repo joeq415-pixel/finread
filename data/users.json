@@ -1,0 +1,200 @@
+[
+  {
+    "id": "d678755c-2bdc-4509-8005-4bbdd848f0dc",
+    "email": "testuser1@example.com",
+    "name": "Test User",
+    "passwordHash": "$2a$12$ToN03VPDJ/Nb3RfOPkxT3uA0gl0249/dk.qLRawkH3nm..gPHLQGm",
+    "createdAt": "2026-06-19T02:23:13.254Z",
+    "tier": "free",
+    "stripeCustomerId": null,
+    "stripeSubscriptionId": null,
+    "analysesThisMonth": 0,
+    "usageResetAt": "2026-07-19T02:23:13.255Z"
+  },
+  {
+    "tier": "free",
+    "stripeCustomerId": null,
+    "stripeSubscriptionId": null,
+    "analysesThisMonth": 1,
+    "usageResetAt": "2026-07-19T02:34:17.817Z",
+    "id": "24a5af0e-0d4e-45e0-b7a5-9c479c98a28c",
+    "email": "smoketest@example.com",
+    "name": "Smoke Test",
+    "passwordHash": "$2a$12$nUR351enKV8r.tXTOp3slOx4yjToWNKZ/HKTlCerK6BRmnm8uXwKK",
+    "createdAt": "2026-06-19T02:34:17.817Z"
+  },
+  {
+    "tier": "free",
+    "stripeCustomerId": null,
+    "stripeSubscriptionId": null,
+    "analysesThisMonth": 4,
+    "usageResetAt": "2026-07-19T02:47:35.798Z",
+    "trialEndsAt": "2020-01-01T00:00:00.000Z",
+    "id": "1370b8f9-ca13-4b3b-a007-f52925ab298c",
+    "email": "trialuser@example.com",
+    "name": "Trial User",
+    "passwordHash": "$2a$12$dQQOxDFiV8gKF5DWWw/ci.OSY8/XmL7VsFjCd4G/0ZilmpQxBslSe",
+    "createdAt": "2026-06-19T02:47:35.796Z"
+  },
+  {
+    "tier": "pro",
+    "stripeCustomerId": null,
+    "stripeSubscriptionId": null,
+    "analysesThisMonth": 4,
+    "usageResetAt": "2026-07-19T02:52:57.671Z",
+    "trialEndsAt": "2020-01-01T00:00:00.000Z",
+    "id": "2bd43a85-cebb-4bf0-9e1b-7d8bd70cf5df",
+    "email": "badge_trial@example.com",
+    "name": "Badge Trial",
+    "passwordHash": "$2a$12$D0ZxmOZQRjVZE128IVjsyusRh9rdPiw8AEz.O.UobeW3FCN./snwS",
+    "createdAt": "2026-06-19T02:52:57.671Z"
+  },
+  {
+    "tier": "free",
+    "stripeCustomerId": null,
+    "stripeSubscriptionId": null,
+    "analysesThisMonth": 222,
+    "usageResetAt": "2026-07-19T02:56:01.314Z",
+    "trialEndsAt": "2026-06-26T02:56:01.314Z",
+    "id": "f78ce5c0-8582-4bad-99ef-c56de4074266",
+    "email": "joeq415@gmail.com",
+    "name": "Joe",
+    "passwordHash": "$2a$12$jw5CZ/.SU7euRIaW8dxase4y7tHoMPM3UENTwBS8nNSzv46NZ1rcy",
+    "createdAt": "2026-06-19T02:56:01.314Z"
+  },
+  {
+    "id": "13fa1a63-1e21-4ce1-970a-04b1a958ce97",
+    "email": "flag_test@example.com",
+    "name": "flag_test",
+    "passwordHash": "$2a$12$hufO3sJKQxIdVd6iXiOXVOQSQrrzzM7YWNXsQW3kVFj1xl7sbbViq",
+    "createdAt": "2026-06-20T02:05:14.604Z",
+    "tier": "free",
+    "stripeCustomerId": null,
+    "stripeSubscriptionId": null,
+    "analysesThisMonth": 0,
+    "usageResetAt": "2026-07-20T02:05:14.604Z",
+    "trialEndsAt": "2026-06-27T02:05:14.604Z"
+  },
+  {
+    "id": "2ac789df-1bb0-4bdb-87e5-89eed8cd3923",
+    "email": "qatest@example.com",
+    "name": "qatest",
+    "passwordHash": "$2a$12$O.XZf960Jv1zgZMmeHSsiO0Q1qgg7aLv/alB53.alc1Mi00Y68oNe",
+    "createdAt": "2026-06-20T03:07:38.160Z",
+    "tier": "free",
+    "stripeCustomerId": null,
+    "stripeSubscriptionId": null,
+    "analysesThisMonth": 0,
+    "usageResetAt": "2026-07-20T03:07:38.160Z",
+    "trialEndsAt": "2026-06-27T03:07:38.160Z"
+  },
+  {
+    "id": "3e09cfc1-174c-4a7e-b4bf-4c9616b02a33",
+    "email": "xbrl_test@example.com",
+    "name": "XBRL Tester",
+    "passwordHash": "$2a$12$nImJgFgKBzM7eMTbLYRM3egVy.rCrONFLypxj54g/3vaTMKOYTMXW",
+    "createdAt": "2026-06-22T03:44:17.900Z",
+    "tier": "free",
+    "stripeCustomerId": null,
+    "stripeSubscriptionId": null,
+    "analysesThisMonth": 0,
+    "usageResetAt": "2026-07-22T03:44:17.900Z",
+    "trialEndsAt": "2026-06-29T03:44:17.900Z"
+  },
+  {
+    "tier": "free",
+    "stripeCustomerId": null,
+    "stripeSubscriptionId": null,
+    "analysesThisMonth": 50,
+    "usageResetAt": "2026-07-24T03:11:11.457Z",
+    "trialEndsAt": "2026-07-01T03:11:11.457Z",
+    "id": "9ce3ec69-c435-4f9b-8381-1948e1d1a61c",
+    "email": "ajhdfs@gmail.com",
+    "name": "asf",
+    "passwordHash": "$2a$12$8ZayK8NC5BYnE2s7eo.KAODZYrUvNs3lja3Z54YX4YMlEsvh8tE3G",
+    "createdAt": "2026-06-24T03:11:11.457Z",
+    "preferences": {
+      "hasSeenTour": true
+    }
+  },
+  {
+    "id": "ba4fd67f-04d7-498f-98bb-7615d829980f",
+    "email": "asdfsdf@gmail.com",
+    "name": "asdfdsf",
+    "passwordHash": "$2a$12$ZsHKmbDhmCeCP0GyPaus..fd49H05hfLdLTLcZ9a.lmFmlrctJ/gq",
+    "createdAt": "2026-06-28T02:30:59.835Z",
+    "tier": "free",
+    "stripeCustomerId": null,
+    "stripeSubscriptionId": null,
+    "analysesThisMonth": 0,
+    "usageResetAt": "2026-07-28T02:30:59.835Z",
+    "trialEndsAt": "2026-07-05T02:30:59.835Z",
+    "preferences": {
+      "hasSeenTour": false
+    }
+  },
+  {
+    "tier": "free",
+    "stripeCustomerId": null,
+    "stripeSubscriptionId": null,
+    "analysesThisMonth": 4,
+    "usageResetAt": "2026-07-28T02:32:26.108Z",
+    "trialEndsAt": "2026-07-03T02:32:26.108Z",
+    "id": "c41614a0-a261-41e9-bf06-631b1de788be",
+    "email": "jlkajsdlfj@gmail.com",
+    "name": "kjakdfj",
+    "passwordHash": "$2a$12$sebDLyRDPEG5dhjgMRGwXOTFsgDCOrJNcfjQ6BrQTiFHh7TmtHjgi",
+    "createdAt": "2026-06-28T02:32:26.108Z",
+    "preferences": {
+      "hasSeenTour": false
+    }
+  },
+  {
+    "tier": "free",
+    "stripeCustomerId": null,
+    "stripeSubscriptionId": null,
+    "analysesThisMonth": 5,
+    "usageResetAt": "2026-07-28T03:33:13.150Z",
+    "trialEndsAt": "2026-07-03T03:33:13.150Z",
+    "id": "976862db-ea5e-455f-ac05-e7c2dcbad51d",
+    "email": "dsrtrdg",
+    "name": "DGDSGF",
+    "passwordHash": "$2a$12$M7dpyGAQrxNaNAaeA59EauFYrImZpzlhIHRdIYZP6CLEZJrK35F5i",
+    "createdAt": "2026-06-28T03:33:13.150Z",
+    "preferences": {
+      "hasSeenTour": true
+    }
+  },
+  {
+    "tier": "free",
+    "stripeCustomerId": null,
+    "stripeSubscriptionId": null,
+    "analysesThisMonth": 60,
+    "usageResetAt": "2026-07-28T04:02:08.505Z",
+    "trialEndsAt": "2026-07-03T04:02:08.505Z",
+    "id": "8d64e0d6-63b2-47ee-85fe-27b6356842bc",
+    "email": "safsdf",
+    "name": "safdsfdaf",
+    "passwordHash": "$2a$12$v1t1El4X05YsE4LU1WOHlOSrMWjytzbydaB59eraTQdFErnbqYzlu",
+    "createdAt": "2026-06-28T04:02:08.505Z",
+    "preferences": {
+      "hasSeenTour": false
+    }
+  },
+  {
+    "tier": "free",
+    "stripeCustomerId": null,
+    "stripeSubscriptionId": null,
+    "analysesThisMonth": 6,
+    "usageResetAt": "2026-07-29T04:40:23.862Z",
+    "trialEndsAt": "2026-07-04T04:40:23.862Z",
+    "id": "381510b5-9f17-4eba-ad3f-f91839fb96bd",
+    "email": "asfd@gmail.com",
+    "name": "asfdfs",
+    "passwordHash": "$2a$12$UaEKMx1Tzly0dutHsM8UIuDdROj1WoAH7FZPWkZzgDDaF3uKyi9UK",
+    "createdAt": "2026-06-29T04:40:23.862Z",
+    "preferences": {
+      "hasSeenTour": true
+    }
+  }
+]

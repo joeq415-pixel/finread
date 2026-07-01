@@ -1,0 +1,28 @@
+[
+  {
+    "id": "eb840bb7-b581-4c65-b69e-f76595b3ff15",
+    "userId": "2bd43a85-cebb-4bf0-9e1b-7d8bd70cf5df",
+    "userEmail": "badge_trial@example.com",
+    "ticker": "AAPL",
+    "formType": "10-K",
+    "accessionNumber": "0000320193-25-000079",
+    "sectionKey": "risks",
+    "sectionLabel": "Risk Factors",
+    "reason": "The risk figure seems wrong",
+    "createdAt": "2026-06-19T03:11:07.283Z",
+    "status": "open"
+  },
+  {
+    "id": "f9125215-7e09-4ced-85a2-bba69c8aa69f",
+    "userId": "13fa1a63-1e21-4ce1-970a-04b1a958ce97",
+    "userEmail": "flag_test@example.com",
+    "ticker": "AAPL",
+    "formType": "10-K",
+    "accessionNumber": "",
+    "sectionKey": "revenue",
+    "sectionLabel": "Revenue",
+    "reason": "The 2024 revenue figure seems off",
+    "createdAt": "2026-06-20T02:05:14.725Z",
+    "status": "open"
+  }
+]

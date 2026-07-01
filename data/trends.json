@@ -1,0 +1,90 @@
+[
+  {
+    "ticker": "TSLA",
+    "metric": "roic",
+    "periodType": "annual",
+    "currentValue": "3.21",
+    "previousValue": "3.21",
+    "changeAmount": 0,
+    "changePct": 0,
+    "trendStatus": "stable",
+    "calculatedAt": "2026-06-29T03:33:03.161Z"
+  },
+  {
+    "ticker": "TSLA",
+    "metric": "fcfYield",
+    "periodType": "annual",
+    "currentValue": "4.51",
+    "previousValue": "4.51",
+    "changeAmount": 0,
+    "changePct": 0,
+    "trendStatus": "stable",
+    "calculatedAt": "2026-06-29T03:33:03.161Z"
+  },
+  {
+    "ticker": "TSLA",
+    "metric": "capexIntensity",
+    "periodType": "annual",
+    "currentValue": "9.00",
+    "previousValue": "9.00",
+    "changeAmount": 0,
+    "changePct": 0,
+    "trendStatus": "stable",
+    "calculatedAt": "2026-06-29T03:33:03.161Z"
+  },
+  {
+    "ticker": "MSFT",
+    "metric": "roa",
+    "periodType": "annual",
+    "currentValue": "53.28",
+    "previousValue": "55.18",
+    "changeAmount": -1.8999999999999986,
+    "changePct": -3.4432765494744446,
+    "trendStatus": "declining",
+    "calculatedAt": "2026-06-30T03:32:28.870Z"
+  },
+  {
+    "ticker": "MSFT",
+    "metric": "roic",
+    "periodType": "annual",
+    "currentValue": "26.52",
+    "previousValue": "27.79",
+    "changeAmount": -1.2699999999999996,
+    "changePct": -4.569989204749909,
+    "trendStatus": "declining",
+    "calculatedAt": "2026-06-30T03:32:28.870Z"
+  },
+  {
+    "ticker": "MSFT",
+    "metric": "fcfConversionRate",
+    "periodType": "annual",
+    "currentValue": "0.70",
+    "previousValue": "0.84",
+    "changeAmount": -0.14,
+    "changePct": -16.666666666666668,
+    "trendStatus": "stable",
+    "calculatedAt": "2026-06-30T03:32:28.870Z"
+  },
+  {
+    "ticker": "MSFT",
+    "metric": "fcfYield",
+    "periodType": "annual",
+    "currentValue": "37.47",
+    "previousValue": "46.37",
+    "changeAmount": -8.899999999999999,
+    "changePct": -19.193444037092945,
+    "trendStatus": "declining",
+    "calculatedAt": "2026-06-30T03:32:28.870Z"
+  },
+  {
+    "ticker": "MSFT",
+    "metric": "capexIntensity",
+    "periodType": "annual",
+    "currentValue": "22.91",
+    "previousValue": "18.15",
+    "changeAmount": 4.760000000000002,
+    "changePct": 26.225895316804422,
+    "trendStatus": "declining",
+    "calculatedAt": "2026-06-30T03:32:28.870Z"
+  }
+]
