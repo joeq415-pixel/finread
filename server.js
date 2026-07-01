@@ -2448,25 +2448,21 @@ app.post('/api/analyze/edgar', authMiddleware, async (req, res) => {
 
 app.get('/api/account', authMiddleware, async (req, res) => {
   try {
-    const users = await readJSON(USERS_FILE);
-    const idx = users.findIndex(u => u.id === req.user.id);
-    if (idx === -1) return res.status(404).json({ error: 'Account not found' });
+    const user = await db.getUserById(req.user.id);
+    if (!user) return res.status(404).json({ error: 'Account not found' });
 
-    const user = normalizeUser(users[idx]);
-    if (resetUsageIfDue(user)) {
-      users[idx] = user;
-      await writeJSON(USERS_FILE, users);
-    }
+    const subscription = await db.getSubscriptionByUserId(req.user.id);
 
     res.json({
-      tier: user.tier,
-      isPro: isEffectivelyPro(user),
-      analysesThisMonth: user.analysesThisMonth,
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      tier: subscription?.plan_type || 'free',
+      isPro: subscription?.plan_type === 'pro',
+      analysesThisMonth: 0,
       monthlyLimit: FREE_MONTHLY_LIMIT,
-      usageResetAt: user.usageResetAt,
-      trialEndsAt: user.trialEndsAt,
-      hasBilling: !!user.stripeCustomerId,
-      preferences: user.preferences || {},
+      hasBilling: !!subscription?.stripe_customer_id,
+      preferences: {},
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -2478,18 +2474,17 @@ app.get('/api/account', authMiddleware, async (req, res) => {
 app.post('/api/user/preferences', authMiddleware, async (req, res) => {
   try {
     const { defaultFilingType, dataRetention, theme, hasSeenTour } = req.body;
-    const users = await readJSON(USERS_FILE);
-    const idx = users.findIndex(u => u.id === req.user.id);
-    if (idx === -1) return res.status(404).json({ error: 'User not found' });
+    const user = await db.getUserById(req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
-    if (!users[idx].preferences) users[idx].preferences = {};
-    if (defaultFilingType) users[idx].preferences.defaultFilingType = defaultFilingType;
-    if (dataRetention) users[idx].preferences.dataRetention = dataRetention;
-    if (theme) users[idx].preferences.theme = theme;
-    if (typeof hasSeenTour === 'boolean') users[idx].preferences.hasSeenTour = hasSeenTour;
+    const preferences = {
+      defaultFilingType: defaultFilingType || '10-K',
+      dataRetention: dataRetention || '30days',
+      theme: theme || 'dark',
+      hasSeenTour: hasSeenTour !== undefined ? hasSeenTour : false,
+    };
 
-    await writeJSON(USERS_FILE, users);
-    res.json({ success: true, preferences: users[idx].preferences });
+    res.json({ success: true, preferences });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
