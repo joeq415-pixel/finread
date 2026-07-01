@@ -306,7 +306,6 @@ async function calculateAndStoreTrends(ticker, formType) {
 app.post('/api/billing/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 
 app.use(express.json({ limit: '10mb' }));
-app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'finread.html'));
@@ -6077,5 +6076,8 @@ async function startServer() {
     process.exit(1);
   }
 }
+
+// ── STATIC FILES (must come AFTER all API routes) ──────────────────────────────
+app.use(express.static(__dirname));
 
 startServer();
