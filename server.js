@@ -2482,6 +2482,11 @@ app.get('/api/account', authMiddleware, async (req, res) => {
 
     const subscription = await db.getSubscriptionByUserId(req.user.id);
 
+    // Calculate trial end date
+    const trialEndsAt = subscription?.created_at ?
+      new Date(new Date(subscription.created_at).getTime() + 5 * 24 * 60 * 60 * 1000).toISOString() :
+      new Date(0).toISOString();
+
     // Check if user is in free trial (5 days from subscription creation)
     const isInTrial = subscription &&
       subscription.created_at &&
@@ -2495,6 +2500,7 @@ app.get('/api/account', authMiddleware, async (req, res) => {
       name: user.name,
       tier: subscription?.plan_type || 'free',
       isPro: isPro,
+      trialEndsAt: trialEndsAt,
       analysesThisMonth: 0,
       monthlyLimit: FREE_MONTHLY_LIMIT,
       hasBilling: !!subscription?.stripe_customer_id,
