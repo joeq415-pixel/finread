@@ -192,6 +192,51 @@ const db = {
       LIMIT ${limit}
     `;
     return result.rows;
+  },
+
+  // Email verification operations
+  async createVerificationToken(userId, token) {
+    try {
+      await sql`
+        INSERT INTO email_verification_tokens (user_id, token, expires_at)
+        VALUES (${userId}, ${token}, CURRENT_TIMESTAMP + INTERVAL '24 hours')
+      `;
+      return true;
+    } catch (error) {
+      console.error('Error creating verification token:', error);
+      throw error;
+    }
+  },
+
+  async verifyEmail(token) {
+    try {
+      const result = await sql`
+        UPDATE users
+        SET email_verified = true, updated_at = CURRENT_TIMESTAMP
+        WHERE id = (
+          SELECT user_id FROM email_verification_tokens
+          WHERE token = ${token} AND expires_at > CURRENT_TIMESTAMP
+        )
+        RETURNING id, email, email_verified
+      `;
+
+      if (result.rows.length > 0) {
+        // Delete the token after use
+        await sql`DELETE FROM email_verification_tokens WHERE token = ${token}`;
+        return result.rows[0];
+      }
+      return null;
+    } catch (error) {
+      console.error('Error verifying email:', error);
+      throw error;
+    }
+  },
+
+  async isEmailVerified(userId) {
+    const result = await sql`
+      SELECT email_verified FROM users WHERE id = ${userId}
+    `;
+    return result.rows[0]?.email_verified || false;
   }
 };
 

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Email - FinRead</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    .logo {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 1.8rem;
+      color: #1a1a1a;
+      margin-bottom: 10px;
+    }
+    .status {
+      margin: 30px 0;
+      font-size: 1rem;
+      color: #666;
+    }
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .success {
+      color: #22c55e;
+    }
+    .error {
+      color: #ef4444;
+    }
+    .button {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 12px 32px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 20px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .button:hover {
+      background: #5568d3;
+    }
+    .button.secondary {
+      background: #e5e7eb;
+      color: #1a1a1a;
+    }
+    .button.secondary:hover {
+      background: #d1d5db;
+    }
+    .message {
+      margin: 20px 0;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .icon {
+      font-size: 3rem;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">✉️</div>
+    <h1 id="title">Verifying Email</h1>
+    <div class="status">
+      <div class="spinner" id="spinner"></div>
+      <p id="message" class="message">Please wait while we verify your email...</p>
+    </div>
+    <div id="result"></div>
+    <a href="/" class="button secondary" style="display: none;" id="backBtn">Back to FinRead</a>
+  </div>
+
+  <script>
+    const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:3000'
+      : `https://${window.location.hostname}`;
+
+    async function verifyEmail() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+
+      if (!token) {
+        showError('Missing verification token. Please check your email link.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API}/api/auth/verify-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showSuccess(data.user.email);
+        } else {
+          showError(data.error || 'Verification failed. Please try again.');
+        }
+      } catch (err) {
+        showError('An error occurred. Please try again later.');
+        console.error('Verification error:', err);
+      }
+    }
+
+    function showSuccess(email) {
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('title').textContent = 'Email Verified!';
+      document.getElementById('title').className = 'success';
+
+      const result = document.getElementById('result');
+      result.innerHTML = `
+        <div class="icon">✅</div>
+        <p class="message" style="color: #22c55e;">Your email <strong>${email}</strong> has been verified successfully!</p>
+      `;
+
+      document.getElementById('message').innerHTML = 'You can now log in to access all features.';
+      document.getElementById('backBtn').style.display = 'inline-block';
+    }
+
+    function showError(errorMessage) {
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('title').textContent = 'Verification Failed';
+      document.getElementById('title').className = 'error';
+
+      const result = document.getElementById('result');
+      result.innerHTML = `
+        <div class="icon">❌</div>
+        <p class="message" style="color: #ef4444;"><strong>${errorMessage}</strong></p>
+      `;
+
+      document.getElementById('message').innerHTML = 'You can request a new verification email by signing up again.';
+      document.getElementById('backBtn').style.display = 'inline-block';
+    }
+
+    // Start verification on page load
+    verifyEmail();
+  </script>
+</body>
+</html>
