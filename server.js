@@ -2690,11 +2690,9 @@ app.post('/api/reports/deep-dive', authMiddleware, async (req, res) => {
   try {
     const { ticker, formType, sections, takeaways } = req.body;
 
-    // Check tier access — Pro only
-    const user = await readJSON(USERS_FILE).then(users =>
-      users.find(u => u.id === req.user.id)
-    );
-    if (!user || (user.tier === 'free' && (!user.trialEndsAt || new Date(user.trialEndsAt) < new Date()))) {
+    // Check tier access — Pro only (or in trial)
+    const access = await checkTierAccess(req.user.id, 'deep-dive');
+    if (!access.allowed) {
       return res.status(403).json({ error: 'Deep-dive reports require Pro tier' });
     }
 
