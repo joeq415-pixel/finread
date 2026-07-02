@@ -311,6 +311,16 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'finread.html'));
 });
 
+// Privacy Policy
+app.get('/privacy-policy', (req, res) => {
+  res.sendFile(path.join(__dirname, 'privacy-policy.html'));
+});
+
+// Terms of Service
+app.get('/terms-of-service', (req, res) => {
+  res.sendFile(path.join(__dirname, 'terms-of-service.html'));
+});
+
 // ── DATA LAYER ────────────────────────────────────────────────────────────────
 
 const DATA_DIR = path.join(__dirname, 'data');

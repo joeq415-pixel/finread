@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - FinRead</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      color: #1a1a1a;
+      background: #f8f9fa;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: white;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #0066cc;
+    }
+    .last-updated {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 30px;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin-top: 40px;
+      margin-bottom: 15px;
+      color: #0066cc;
+    }
+    h3 {
+      font-size: 1.1rem;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    p {
+      margin-bottom: 15px;
+      color: #555;
+    }
+    ul, ol {
+      margin-left: 30px;
+      margin-bottom: 15px;
+    }
+    li {
+      margin-bottom: 8px;
+      color: #555;
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 30px;
+      color: #0066cc;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    .highlight {
+      background: #f0f4ff;
+      padding: 15px;
+      border-left: 4px solid #0066cc;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-link">← Back to FinRead</a>
+
+    <h1>Privacy Policy</h1>
+    <div class="last-updated">Last updated: July 1, 2026</div>
+
+    <h2>1. Introduction</h2>
+    <p>FinRead ("we," "us," "our," or "Company") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website and services.</p>
+    <p>Please read this Privacy Policy carefully. If you do not agree with our policies and practices, please do not use our Services.</p>
+
+    <h2>2. Information We Collect</h2>
+
+    <h3>A. Information You Provide</h3>
+    <ul>
+      <li><strong>Account Information:</strong> Name, email address, and password when you register</li>
+      <li><strong>Financial Data:</strong> Company tickers, filing types, and analysis preferences you search for</li>
+      <li><strong>User Content:</strong> Questions you ask about financial reports, notes, and watchlist data</li>
+      <li><strong>Billing Information:</strong> If you subscribe to Pro, payment information is processed by Stripe (we do not store full card details)</li>
+    </ul>
+
+    <h3>B. Information Collected Automatically</h3>
+    <ul>
+      <li><strong>Usage Data:</strong> Pages visited, time spent, searches performed, features used</li>
+      <li><strong>Device Information:</strong> Browser type, operating system, IP address, device identifiers</li>
+      <li><strong>Analytics:</strong> How you interact with the platform (via analytics providers)</li>
+    </ul>
+
+    <h3>C. Cookies and Tracking</h3>
+    <p>We use cookies and similar technologies to:</p>
+    <ul>
+      <li>Keep you signed in</li>
+      <li>Remember your preferences (theme, language)</li>
+      <li>Understand how you use FinRead</li>
+      <li>Improve user experience</li>
+    </ul>
+
+    <h2>3. How We Use Your Information</h2>
+    <p>We use your information for:</p>
+    <ul>
+      <li><strong>Service Delivery:</strong> Analyzing financial reports, processing searches, managing your account</li>
+      <li><strong>AI Analysis:</strong> Sending financial documents to Claude AI API for analysis (see Section 5)</li>
+      <li><strong>Improvements:</strong> Understanding usage patterns to improve FinRead</li>
+      <li><strong>Communication:</strong> Sending important updates, security alerts, or support responses</li>
+      <li><strong>Security:</strong> Detecting and preventing fraud, abuse, or unauthorized access</li>
+      <li><strong>Legal Compliance:</strong> Meeting legal obligations</li>
+    </ul>
+
+    <h2>4. Data Sharing & Third Parties</h2>
+    <p>We share your data with the following third parties only as necessary:</p>
+
+    <h3>A. Claude AI (Anthropic)</h3>
+    <div class="highlight">
+      <strong>Important:</strong> When you use FinRead to analyze financial reports, we send the filing data and your questions to Anthropic's Claude AI API for analysis. Please review Anthropic's privacy policy at <a href="https://www.anthropic.com/privacy" target="_blank">https://www.anthropic.com/privacy</a>.
+    </div>
+
+    <h3>B. Payment Processing (Stripe)</h3>
+    <p>For Pro subscriptions, payment information is processed by Stripe. We do not store full credit card details. See Stripe's privacy policy: <a href="https://stripe.com/privacy" target="_blank">https://stripe.com/privacy</a></p>
+
+    <h3>C. Database Hosting (Neon PostgreSQL)</h3>
+    <p>User data is stored on Neon's PostgreSQL servers. See their privacy practices at <a href="https://neon.tech/privacy" target="_blank">https://neon.tech/privacy</a></p>
+
+    <h3>D. Hosting (Railway)</h3>
+    <p>FinRead is hosted on Railway. See their privacy policy at <a href="https://railway.app/privacy" target="_blank">https://railway.app/privacy</a></p>
+
+    <h3>E. Legal Requirements</h3>
+    <p>We may disclose your information if required by law, court order, or to protect FinRead's rights, your safety, or others' safety.</p>
+
+    <h2>5. Data Security</h2>
+    <p>We implement security measures to protect your data:</p>
+    <ul>
+      <li>HTTPS encryption for all data in transit</li>
+      <li>Passwords are hashed using bcryptjs</li>
+      <li>JSON Web Tokens (JWT) for secure authentication</li>
+      <li>Database encryption at rest</li>
+      <li>Regular security reviews</li>
+    </ul>
+    <p>However, no security system is completely impenetrable. We cannot guarantee absolute security of your information.</p>
+
+    <h2>6. Data Retention</h2>
+    <p>We retain your personal information as long as you maintain an active account. You can request deletion of your account and associated data by contacting us.</p>
+    <p>Financial analysis history and watchlist data are retained for as long as your account is active. Upon account deletion, this data is permanently removed.</p>
+
+    <h2>7. Your Rights</h2>
+    <p>Depending on your location, you may have the following rights:</p>
+    <ul>
+      <li><strong>Access:</strong> Request a copy of your personal data</li>
+      <li><strong>Correction:</strong> Update or correct inaccurate information</li>
+      <li><strong>Deletion:</strong> Request deletion of your account and data</li>
+      <li><strong>Data Portability:</strong> Export your data in a portable format</li>
+      <li><strong>Opt-Out:</strong> Opt out of marketing communications</li>
+    </ul>
+    <p>To exercise these rights, contact us at privacy@finread.io</p>
+
+    <h2>8. GDPR & CCPA Compliance</h2>
+    <p><strong>GDPR (EU):</strong> If you are in the EU, you have rights under GDPR. We process data lawfully and with your consent.</p>
+    <p><strong>CCPA (California):</strong> If you are in California, you have rights under CCPA. Contact us to exercise your rights.</p>
+
+    <h2>9. Children's Privacy</h2>
+    <p>FinRead is not intended for children under 13. We do not knowingly collect information from children under 13. If we become aware of such collection, we will delete the data and terminate the account.</p>
+
+    <h2>10. Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. We will notify you of material changes by posting the updated policy on our website and updating the "Last Updated" date.</p>
+
+    <h2>11. Contact Us</h2>
+    <p>For privacy-related questions, concerns, or to exercise your rights, contact us at:</p>
+    <ul>
+      <li><strong>Email:</strong> privacy@finread.io</li>
+      <li><strong>Website:</strong> finread.io</li>
+    </ul>
+  </div>
+</body>
+</html>
