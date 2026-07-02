@@ -5449,13 +5449,10 @@ function showProFeature(featureId) {
   console.log('[showProFeature] Called with:', featureId);
   console.log('[showProFeature] currentUser:', currentUser);
 
-  if (!currentUser || (!currentUser.tier || currentUser.tier !== 'pro')) {
-    console.log('[showProFeature] Tier check - not pro, checking trial');
-    if (!currentUser.isEffectivelyPro) {
-      console.log('[showProFeature] Not pro or trial, showing upgrade');
-      showUpgradePrompt();
-      return;
-    }
+  if (!currentUser || (!currentUser.isPro && currentUser.tier !== 'pro')) {
+    console.log('[showProFeature] Not pro or in trial, showing upgrade');
+    showUpgradePrompt();
+    return;
   }
 
   console.log('[showProFeature] Tier check passed, routing to:', featureId);
