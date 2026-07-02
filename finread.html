@@ -6751,7 +6751,8 @@ function renderSection(key) {
   const bullets = section.bullets || [];
   const hiddenBulletCount = (section.bulletsTotal || bullets.length) - bullets.length;
   const bulletsHtml = bullets.map(b => `<div class="simple-bullet"><span>${b}</span></div>`).join('');
-  const bulletsTeaserHtml = hiddenBulletCount > 0 ? `
+  const isPro = currentUser && (currentUser.tier === 'pro' || currentUser.isPro);
+  const bulletsTeaserHtml = hiddenBulletCount > 0 && !isPro ? `
     <div class="blur-teaser">
       <div class="blur-teaser-bar"></div>
       <div class="blur-teaser-bar"></div>
@@ -6774,7 +6775,8 @@ function renderTakeaways(takeaways, takeawaysTotal) {
     .join('');
 
   const hiddenCount = (takeawaysTotal || list.length) - list.length;
-  const teaserHtml = hiddenCount > 0 ? `
+  const isPro = currentUser && (currentUser.tier === 'pro' || currentUser.isPro);
+  const teaserHtml = hiddenCount > 0 && !isPro ? `
     <div class="blur-teaser" style="grid-column: 1 / -1;">
       <div class="blur-teaser-bar"></div>
       <div class="blur-teaser-bar"></div>
