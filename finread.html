@@ -100,7 +100,7 @@
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; display: none; align-items: center; justify-content: center; padding: 24px; backdrop-filter: blur(8px); }
     .modal-overlay.open { display: flex; }
 
-    .modal { background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%); border: 1px solid var(--border); border-radius: var(--radius-lg); width: 100%; max-width: 440px; animation: modalIn 0.3s cubic-bezier(0.23, 1, 0.32, 1); overflow: hidden; scrollbar-width: none; -ms-overflow-style: none; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4); }
+    .modal { background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%); border: 1px solid var(--border); border-radius: var(--radius-lg); width: 100%; max-width: 440px; max-height: 90vh; animation: modalIn 0.3s cubic-bezier(0.23, 1, 0.32, 1); overflow: auto; scrollbar-width: none; -ms-overflow-style: none; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4); }
     .modal::-webkit-scrollbar { display: none; }
     @keyframes modalIn { from { opacity: 0; transform: scale(0.92) translateY(12px); } to { opacity: 1; transform: none; } }
 
@@ -114,7 +114,7 @@
     .modal-tab:hover { background: rgba(255,255,255,0.08); }
     .modal-tab.active { background: var(--accent); color: #000; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); }
 
-    .modal-body { padding: 28px 28px 32px; display: flex; flex-direction: column; gap: 18px; scrollbar-width: none; -ms-overflow-style: none; }
+    .modal-body { padding: 28px 28px 32px; display: flex; flex-direction: column; gap: 18px; overflow: auto; max-height: calc(90vh - 100px); scrollbar-width: none; -ms-overflow-style: none; }
     .modal-body::-webkit-scrollbar { display: none; }
 
     .field { display: flex; flex-direction: column; gap: 8px; }
