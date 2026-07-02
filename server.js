@@ -456,6 +456,10 @@ async function checkTierAccess(userId, formType) {
       subscription.created_at &&
       new Date(subscription.created_at) > new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
 
+    const trialEndsAt = subscription?.created_at ?
+      new Date(new Date(subscription.created_at).getTime() + 5 * 24 * 60 * 60 * 1000).toISOString() :
+      new Date(0).toISOString();
+
     const isPro = subscription?.plan_type === 'pro' || isInTrial;
     const tier = subscription?.plan_type || 'free';
 
@@ -466,10 +470,10 @@ async function checkTierAccess(userId, formType) {
 
     // Locked form types get a one-section preview for free users
     if (!isPro && !FREE_ALLOWED_FORMS.includes(formType)) {
-      return { allowed: true, user: { ...user, tier }, preview: true };
+      return { allowed: true, user: { ...user, tier, trialEndsAt }, preview: true };
     }
 
-    return { allowed: true, user: { ...user, tier } };
+    return { allowed: true, user: { ...user, tier, trialEndsAt } };
   } catch (err) {
     console.error('[checkTierAccess] Error:', err);
     // Allow access on error (fallback)
