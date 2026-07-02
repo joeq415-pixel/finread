@@ -2478,12 +2478,19 @@ app.get('/api/account', authMiddleware, async (req, res) => {
 
     const subscription = await db.getSubscriptionByUserId(req.user.id);
 
+    // Check if user is in free trial (5 days from subscription creation)
+    const isInTrial = subscription &&
+      subscription.created_at &&
+      new Date(subscription.created_at) > new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
+
+    const isPro = subscription?.plan_type === 'pro' || isInTrial;
+
     res.json({
       id: user.id,
       email: user.email,
       name: user.name,
       tier: subscription?.plan_type || 'free',
-      isPro: subscription?.plan_type === 'pro',
+      isPro: isPro,
       analysesThisMonth: 0,
       monthlyLimit: FREE_MONTHLY_LIMIT,
       hasBilling: !!subscription?.stripe_customer_id,
