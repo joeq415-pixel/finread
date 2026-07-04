@@ -5753,7 +5753,8 @@ function signOut() {
 }
 
 function logout() {
-  localStorage.removeItem('authToken');
+  localStorage.removeItem('fr_token');
+  localStorage.removeItem('fr_user');
   window.location.href = '/';
 }
 
