@@ -333,6 +333,11 @@ app.get('/contact', (req, res) => {
   res.sendFile(path.join(__dirname, 'contact.html'));
 });
 
+// Account page
+app.get('/account', (req, res) => {
+  res.sendFile(path.join(__dirname, 'account.html'));
+});
+
 // Privacy Policy
 app.get('/privacy-policy', (req, res) => {
   res.sendFile(path.join(__dirname, 'privacy-policy.html'));
@@ -2687,6 +2692,28 @@ app.get('/api/account', authMiddleware, async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete account endpoint
+app.post('/api/account/delete', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Delete all related data
+    await Promise.all([
+      db.pool.query('DELETE FROM email_verification_tokens WHERE user_id = $1', [userId]),
+      db.pool.query('DELETE FROM password_reset_tokens WHERE user_id = $1', [userId]),
+      db.pool.query('DELETE FROM qa_audit_log WHERE user_id = $1', [userId]),
+      db.pool.query('DELETE FROM watchlist_items WHERE user_id = $1', [userId]),
+      db.pool.query('DELETE FROM subscriptions WHERE user_id = $1', [userId]),
+      db.pool.query('DELETE FROM users WHERE id = $1', [userId]),
+    ]);
+
+    res.json({ success: true, message: 'Account deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting account:', err);
+    res.status(500).json({ error: 'Failed to delete account' });
   }
 });
 

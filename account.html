@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Settings - FinRead</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    :root {
+      --bg: #0F172A;
+      --bg2: #1A2847;
+      --text: #F8FAFC;
+      --muted: #94A3B8;
+      --accent: #22C55E;
+      --accent2: #0EA5E9;
+      --border: rgba(255,255,255,0.1);
+      --danger: #ff6b6b;
+    }
+    body {
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      color: var(--text);
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 {
+      font-size: 2rem;
+      color: var(--accent);
+    }
+    .back-button {
+      background: rgba(255,255,255,0.04);
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+    .back-button:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.2);
+    }
+    .card {
+      background: linear-gradient(135deg, var(--bg2) 0%, rgba(26, 40, 71, 0.8) 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--accent2);
+      margin-bottom: 16px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .info-row:last-child {
+      border-bottom: none;
+    }
+    .info-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .info-value {
+      color: var(--text);
+      font-weight: 500;
+    }
+    .trial-status {
+      background: rgba(34, 197, 94, 0.1);
+      border-left: 4px solid var(--accent);
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .trial-days {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .trial-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+    .button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.95rem;
+      display: inline-block;
+      margin-right: 12px;
+      margin-top: 16px;
+    }
+    .button-primary {
+      background: var(--accent);
+      color: #000;
+    }
+    .button-primary:hover {
+      background: #20a84f;
+    }
+    .button-ghost {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+    }
+    .button-ghost:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.2);
+    }
+    .button-danger {
+      background: rgba(255, 107, 107, 0.2);
+      border: 1.5px solid rgba(255, 107, 107, 0.4);
+      color: #ff6b6b;
+    }
+    .button-danger:hover {
+      background: rgba(255, 107, 107, 0.3);
+    }
+    .message {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .message.success {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--accent);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      display: block;
+    }
+    .message.error {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      display: block;
+    }
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal {
+      background: linear-gradient(135deg, var(--bg2) 0%, rgba(26, 40, 71, 0.8) 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 400px;
+      width: 100%;
+    }
+    .modal h2 {
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .modal p {
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .modal-actions button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Account Settings</h1>
+      <a href="/" class="back-button">← Back to FinRead</a>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <!-- Profile Card -->
+    <div class="card">
+      <div class="card-title">Profile Information</div>
+      <div class="info-row">
+        <span class="info-label">Name</span>
+        <span class="info-value" id="userName">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Email</span>
+        <span class="info-value" id="userEmail">-</span>
+      </div>
+    </div>
+
+    <!-- Trial Status Card -->
+    <div class="card">
+      <div class="card-title">Subscription</div>
+      <div id="trialCard" class="trial-status">
+        <div class="trial-days" id="daysLeft">-</div>
+        <div class="trial-label">Days remaining in free trial</div>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Plan</span>
+        <span class="info-value" id="planType">Free</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Status</span>
+        <span class="info-value" id="planStatus">Active</span>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="card">
+      <div class="card-title" style="color: #ff6b6b;">Danger Zone</div>
+      <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 16px;">
+        Once you delete your account, there is no going back. Please be certain.
+      </p>
+      <button class="button button-danger" onclick="openDeleteModal()">Delete Account</button>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="margin-top: 32px;">
+      <button class="button button-ghost" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <h2>Delete Account?</h2>
+      <p>
+        This action cannot be undone. All your data, including analyses, watchlist, and settings will be permanently deleted.
+      </p>
+      <div class="modal-actions">
+        <button style="background: rgba(255,255,255,0.04); border: 1.5px solid var(--border); color: var(--text);" onclick="closeDeleteModal()">
+          Cancel
+        </button>
+        <button style="background: #ff6b6b; color: white;" onclick="confirmDeleteAccount()">
+          Delete Forever
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:3000'
+      : `https://${window.location.hostname}`;
+
+    const messageDiv = document.getElementById('message');
+
+    // Load account data
+    async function loadAccount() {
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          window.location.href = '/';
+          return;
+        }
+
+        const response = await fetch(`${API}/api/account`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+          window.location.href = '/';
+          return;
+        }
+
+        const data = await response.json();
+        document.getElementById('userName').textContent = data.name || '-';
+        document.getElementById('userEmail').textContent = data.email;
+        document.getElementById('planType').textContent = data.tier === 'pro' ? 'Pro' : 'Free';
+
+        // Calculate trial days remaining
+        if (data.trialEndsAt) {
+          const trialEnd = new Date(data.trialEndsAt);
+          const now = new Date();
+          const daysLeft = Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24));
+
+          if (daysLeft > 0 && data.tier !== 'pro') {
+            document.getElementById('daysLeft').textContent = daysLeft;
+            document.getElementById('trialCard').style.display = 'block';
+          } else {
+            document.getElementById('trialCard').style.display = 'none';
+          }
+        } else {
+          document.getElementById('trialCard').style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Error loading account:', error);
+        window.location.href = '/';
+      }
+    }
+
+    function openDeleteModal() {
+      document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.remove('active');
+    }
+
+    async function confirmDeleteAccount() {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`${API}/api/account/delete`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          localStorage.removeItem('authToken');
+          messageDiv.className = 'message success';
+          messageDiv.textContent = 'Account deleted successfully. Redirecting...';
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 2000);
+        } else {
+          const data = await response.json();
+          messageDiv.className = 'message error';
+          messageDiv.textContent = data.error || 'Failed to delete account';
+        }
+      } catch (error) {
+        messageDiv.className = 'message error';
+        messageDiv.textContent = 'An error occurred';
+        console.error('Error:', error);
+      }
+      closeDeleteModal();
+    }
+
+    function logout() {
+      localStorage.removeItem('authToken');
+      window.location.href = '/';
+    }
+
+    // Load data on page load
+    loadAccount();
+  </script>
+</body>
+</html>
