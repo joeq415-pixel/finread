@@ -4,7 +4,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Anthropic = require('@anthropic-ai/sdk');
 const Stripe = require('stripe');
-const { Resend } = require('resend');
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');
@@ -24,7 +23,6 @@ if (!process.env.STRIPE_SECRET_KEY) {
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder');
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // 🔒 SECURITY MIDDLEWARE - Applied to all requests
@@ -314,10 +312,6 @@ app.get('/', (req, res) => {
 });
 
 // Email verification page
-app.get('/verify-email', (req, res) => {
-  res.sendFile(path.join(__dirname, 'verify-email.html'));
-});
-
 // Privacy Policy
 app.get('/privacy-policy', (req, res) => {
   res.sendFile(path.join(__dirname, 'privacy-policy.html'));
@@ -528,38 +522,10 @@ app.post('/api/auth/register', async (req, res) => {
     // Create subscription record (free tier with 5-day trial)
     await db.createSubscription(user.id, null, 'free');
 
-    // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    await db.createVerificationToken(user.id, verificationToken);
-
-    // Send verification email
-    const verificationLink = `${process.env.BASE_URL || 'https://finread.io'}/verify-email?token=${verificationToken}`;
-    try {
-      await resend.emails.send({
-        from: 'onboarding@resend.dev',
-        to: email.toLowerCase(),
-        subject: 'Verify your FinRead email',
-        html: `
-          <h2>Welcome to FinRead!</h2>
-          <p>Hi ${name || 'there'},</p>
-          <p>Click the link below to verify your email and start analyzing financial reports:</p>
-          <a href="${verificationLink}" style="background-color: #0066cc; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Verify Email</a>
-          <p>Or copy this link: ${verificationLink}</p>
-          <p>This link expires in 24 hours.</p>
-          <p>Best,<br>The FinRead Team</p>
-        `
-      });
-    } catch (emailErr) {
-      console.error('Error sending verification email:', emailErr);
-      // Don't fail registration if email fails, but log it
-    }
-
     const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '30d' });
     res.json({
       token,
-      user: { id: user.id, email: user.email, name: user.name, tier: 'free' },
-      requiresEmailVerification: true,
-      message: 'Check your email to verify your account'
+      user: { id: user.id, email: user.email, name: user.name, tier: 'free' }
     });
   } catch (err) {
     if (err.message.includes('already exists')) {
@@ -581,23 +547,6 @@ app.post('/api/auth/login', async (req, res) => {
 
     const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '30d' });
     res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Email verification
-app.post('/api/auth/verify-email', async (req, res) => {
-  try {
-    const { token } = req.body;
-    if (!token) return res.status(400).json({ error: 'Verification token required' });
-
-    const verifiedUser = await db.verifyEmail(token);
-    if (!verifiedUser) {
-      return res.status(400).json({ error: 'Invalid or expired verification token' });
-    }
-
-    res.json({ success: true, message: 'Email verified successfully', user: verifiedUser });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
