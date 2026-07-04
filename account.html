@@ -289,7 +289,7 @@
     // Load account data
     async function loadAccount() {
       try {
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('fr_token');
         if (!token) {
           window.location.href = '/';
           return;
@@ -340,7 +340,7 @@
 
     async function confirmDeleteAccount() {
       try {
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('fr_token');
         const response = await fetch(`${API}/api/account/delete`, {
           method: 'POST',
           headers: {
@@ -350,7 +350,8 @@
         });
 
         if (response.ok) {
-          localStorage.removeItem('authToken');
+          localStorage.removeItem('fr_token');
+          localStorage.removeItem('fr_user');
           messageDiv.className = 'message success';
           messageDiv.textContent = 'Account deleted successfully. Redirecting...';
           setTimeout(() => {
@@ -370,7 +371,8 @@
     }
 
     function logout() {
-      localStorage.removeItem('authToken');
+      localStorage.removeItem('fr_token');
+      localStorage.removeItem('fr_user');
       window.location.href = '/';
     }
 
