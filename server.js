@@ -328,6 +328,11 @@ app.get('/forgot-password', (req, res) => {
   res.sendFile(path.join(__dirname, 'forgot-password.html'));
 });
 
+// Contact page
+app.get('/contact', (req, res) => {
+  res.sendFile(path.join(__dirname, 'contact.html'));
+});
+
 // Privacy Policy
 app.get('/privacy-policy', (req, res) => {
   res.sendFile(path.join(__dirname, 'privacy-policy.html'));
@@ -670,6 +675,43 @@ app.post('/api/auth/reset-password', async (req, res) => {
     }
 
     res.json({ success: true, message: 'Password reset successfully!', email: user.email });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Contact form endpoint
+app.post('/api/contact', async (req, res) => {
+  try {
+    const { name, email, subject, message } = req.body;
+    if (!name || !email || !subject || !message) {
+      return res.status(400).json({ error: 'All fields required' });
+    }
+
+    // Send email to admin
+    try {
+      await resend.emails.send({
+        from: 'onboarding@resend.dev',
+        to: 'joeq415@gmail.com',
+        subject: `FinRead Contact: ${subject}`,
+        html: `
+          <h2>New Contact Form Submission</h2>
+          <p><strong>From:</strong> ${name} (${email})</p>
+          <p><strong>Subject:</strong> ${subject}</p>
+          <hr>
+          <p><strong>Message:</strong></p>
+          <p>${message.replace(/\n/g, '<br>')}</p>
+          <hr>
+          <p style="font-size:0.9rem; color:#666;">
+            Reply to: ${email}
+          </p>
+        `
+      });
+    } catch (emailErr) {
+      console.error('Error sending contact email:', emailErr);
+    }
+
+    res.json({ success: true, message: 'Thank you for contacting us! We\'ll get back to you soon.' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

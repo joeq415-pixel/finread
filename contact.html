@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - FinRead</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #0066cc;
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-size: 2rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: #666;
+      font-size: 1rem;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #0066cc;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 150px;
+    }
+    .button {
+      width: 100%;
+      padding: 12px;
+      background: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .button:hover {
+      background: #0052a3;
+    }
+    .button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .message {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      text-align: center;
+      display: none;
+    }
+    .message.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      display: block;
+    }
+    .message.error {
+      background: #ffebee;
+      color: #c62828;
+      display: block;
+    }
+    .back-link {
+      text-align: center;
+      margin-top: 30px;
+    }
+    .back-link a {
+      color: #0066cc;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+    .info {
+      background: #f5f5f5;
+      border-left: 4px solid #0066cc;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 30px;
+      font-size: 0.9rem;
+      color: #666;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">FinRead</div>
+      <h1>Contact Us</h1>
+      <p class="subtitle">We'd love to hear from you. Send us a message!</p>
+    </div>
+
+    <div class="info">
+      <strong>Response Time:</strong> We typically respond to inquiries within 24-48 hours during business days.
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <form id="contactForm">
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" name="name" required placeholder="John Doe">
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required placeholder="you@example.com">
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <input type="text" id="subject" name="subject" required placeholder="How can we help?">
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" required placeholder="Tell us more..."></textarea>
+      </div>
+
+      <button type="submit" class="button" id="submitBtn">Send Message</button>
+    </form>
+
+    <div class="back-link">
+      <a href="/">Back to FinRead</a>
+    </div>
+  </div>
+
+  <script>
+    const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:3000'
+      : `https://${window.location.hostname}`;
+
+    const form = document.getElementById('contactForm');
+    const messageDiv = document.getElementById('message');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const subject = document.getElementById('subject').value;
+      const message = document.getElementById('message').value;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+
+      try {
+        const response = await fetch(`${API}/api/contact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, subject, message })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          messageDiv.className = 'message success';
+          messageDiv.textContent = data.message;
+          form.reset();
+          // Redirect after 2 seconds
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 2000);
+        } else {
+          messageDiv.className = 'message error';
+          messageDiv.textContent = data.error || 'An error occurred';
+        }
+      } catch (error) {
+        messageDiv.className = 'message error';
+        messageDiv.textContent = 'An error occurred. Please try again.';
+        console.error('Error:', error);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Message';
+      }
+    });
+  </script>
+</body>
+</html>
