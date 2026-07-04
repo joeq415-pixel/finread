@@ -38,11 +38,18 @@
     .container {
       max-width: 600px;
       margin: 0 auto;
-      background: linear-gradient(135deg, var(--bg2) 0%, rgba(26, 40, 71, 0.8) 100%);
+      background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: 16px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       padding: 40px;
+    }
+    :root[data-theme="dark"] .container {
+      background: linear-gradient(135deg, #1A2847 0%, rgba(26, 40, 71, 0.8) 100%);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    :root[data-theme="light"] .container {
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
     }
     .header {
       text-align: center;
