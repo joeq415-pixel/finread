@@ -92,15 +92,22 @@
       }
     }
     .card {
-      background: linear-gradient(135deg, rgba(26, 40, 71, 0.8) 0%, rgba(20, 30, 55, 0.6) 100%);
+      background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 28px;
       transition: all 0.3s;
     }
-    .card:hover {
+    :root[data-theme="dark"] .card {
+      background: linear-gradient(135deg, rgba(26, 40, 71, 0.8) 0%, rgba(20, 30, 55, 0.6) 100%);
+    }
+    :root[data-theme="dark"] .card:hover {
       border-color: rgba(255,255,255,0.15);
       background: linear-gradient(135deg, rgba(26, 40, 71, 0.95) 0%, rgba(20, 30, 55, 0.75) 100%);
+    }
+    :root[data-theme="light"] .card:hover {
+      border-color: rgba(0,0,0,0.2);
+      background: #EEFBFF;
     }
     .card-icon {
       font-size: 2.5rem;
@@ -118,11 +125,14 @@
       margin-bottom: 20px;
     }
     .info-block {
-      background: rgba(0,0,0,0.2);
+      background: rgba(0,0,0,0.03);
       border-left: 3px solid var(--accent);
       padding: 16px;
       border-radius: 8px;
       margin-bottom: 16px;
+    }
+    :root[data-theme="dark"] .info-block {
+      background: rgba(0,0,0,0.2);
     }
     .info-block:last-child {
       margin-bottom: 0;
@@ -141,12 +151,15 @@
       font-weight: 600;
     }
     .trial-highlight {
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%);
+      background: rgba(34, 197, 94, 0.08);
       border: 1px solid rgba(34, 197, 94, 0.3);
       border-radius: 12px;
       padding: 24px;
       text-align: center;
       margin-bottom: 24px;
+    }
+    :root[data-theme="dark"] .trial-highlight {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%);
     }
     .trial-days {
       font-size: 3.5rem;
@@ -161,6 +174,10 @@
       font-weight: 500;
     }
     .danger-card {
+      background: rgba(255, 107, 107, 0.08);
+      border: 1.5px solid rgba(255, 107, 107, 0.3);
+    }
+    :root[data-theme="dark"] .danger-card {
       background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 107, 107, 0.05) 100%);
       border: 1.5px solid rgba(255, 107, 107, 0.3);
     }
