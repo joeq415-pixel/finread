@@ -20,6 +20,16 @@
       --border: rgba(255,255,255,0.1);
       --danger: #ff6b6b;
     }
+    :root[data-theme="light"] {
+      --bg: #FFFFFF;
+      --bg2: #F8FAFC;
+      --text: #0F172A;
+      --muted: #64748B;
+      --accent: #22C55E;
+      --accent2: #0EA5E9;
+      --border: rgba(0,0,0,0.1);
+      --danger: #ff6b6b;
+    }
     body {
       font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: linear-gradient(135deg, var(--bg) 0%, #0a0f1e 100%);
@@ -357,6 +367,10 @@
   </div>
 
   <script>
+    // Load theme from localStorage
+    const theme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+
     const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? 'http://localhost:3000'
       : `https://${window.location.hostname}`;
