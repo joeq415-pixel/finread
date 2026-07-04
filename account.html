@@ -22,100 +22,148 @@
     }
     body {
       font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
+      background: linear-gradient(135deg, var(--bg) 0%, #0a0f1e 100%);
       min-height: 100vh;
       color: var(--text);
     }
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 40px 20px;
+    .navbar {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .header {
+    .navbar-content {
+      max-width: 1000px;
+      margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 40px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border);
     }
-    h1 {
-      font-size: 2rem;
+    .navbar-title {
+      font-size: 1.2rem;
+      font-weight: 700;
       color: var(--accent);
     }
     .back-button {
       background: rgba(255,255,255,0.04);
       border: 1.5px solid var(--border);
       color: var(--text);
-      padding: 8px 16px;
-      border-radius: 8px;
+      padding: 10px 20px;
+      border-radius: 10px;
       cursor: pointer;
       text-decoration: none;
       transition: all 0.3s;
       font-weight: 500;
+      font-size: 0.9rem;
     }
     .back-button:hover {
       background: rgba(255,255,255,0.08);
       border-color: rgba(255,255,255,0.2);
     }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 768px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
     .card {
-      background: linear-gradient(135deg, var(--bg2) 0%, rgba(26, 40, 71, 0.8) 100%);
+      background: linear-gradient(135deg, rgba(26, 40, 71, 0.8) 0%, rgba(20, 30, 55, 0.6) 100%);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 20px;
+      border-radius: 16px;
+      padding: 28px;
+      transition: all 0.3s;
+    }
+    .card:hover {
+      border-color: rgba(255,255,255,0.15);
+      background: linear-gradient(135deg, rgba(26, 40, 71, 0.95) 0%, rgba(20, 30, 55, 0.75) 100%);
+    }
+    .card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
     }
     .card-title {
       font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--accent2);
-      margin-bottom: 16px;
-    }
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-    .info-row:last-child {
-      border-bottom: none;
-    }
-    .info-label {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-    .info-value {
+      font-weight: 700;
       color: var(--text);
-      font-weight: 500;
+      margin-bottom: 4px;
     }
-    .trial-status {
-      background: rgba(34, 197, 94, 0.1);
-      border-left: 4px solid var(--accent);
-      padding: 16px;
-      border-radius: 8px;
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
       margin-bottom: 20px;
     }
+    .info-block {
+      background: rgba(0,0,0,0.2);
+      border-left: 3px solid var(--accent);
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    .info-block:last-child {
+      margin-bottom: 0;
+    }
+    .info-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .info-value {
+      font-size: 1.1rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+    .trial-highlight {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
     .trial-days {
-      font-size: 2rem;
-      font-weight: 700;
+      font-size: 3.5rem;
+      font-weight: 900;
       color: var(--accent);
+      line-height: 1;
     }
     .trial-label {
       color: var(--muted);
       font-size: 0.9rem;
-      margin-top: 4px;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+    .danger-card {
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 107, 107, 0.05) 100%);
+      border: 1.5px solid rgba(255, 107, 107, 0.3);
+    }
+    .danger-card .card-title {
+      color: #ff6b6b;
     }
     .button {
       padding: 12px 24px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
       font-size: 0.95rem;
       display: inline-block;
-      margin-right: 12px;
-      margin-top: 16px;
     }
     .button-primary {
       background: var(--accent);
@@ -123,6 +171,8 @@
     }
     .button-primary:hover {
       background: #20a84f;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
     }
     .button-ghost {
       background: transparent;
@@ -130,7 +180,7 @@
       color: var(--text);
     }
     .button-ghost:hover {
-      background: rgba(255,255,255,0.04);
+      background: rgba(255,255,255,0.06);
       border-color: rgba(255,255,255,0.2);
     }
     .button-danger {
@@ -140,12 +190,14 @@
     }
     .button-danger:hover {
       background: rgba(255, 107, 107, 0.3);
+      border-color: rgba(255, 107, 107, 0.6);
     }
     .message {
-      padding: 12px 16px;
-      border-radius: 8px;
+      padding: 14px 16px;
+      border-radius: 10px;
       margin-bottom: 20px;
       display: none;
+      font-weight: 500;
     }
     .message.success {
       background: rgba(34, 197, 94, 0.2);
@@ -166,7 +218,8 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(4px);
       align-items: center;
       justify-content: center;
       z-index: 1000;
@@ -177,20 +230,23 @@
     .modal {
       background: linear-gradient(135deg, var(--bg2) 0%, rgba(26, 40, 71, 0.8) 100%);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 32px;
-      max-width: 400px;
+      max-width: 420px;
       width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     }
     .modal h2 {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       margin-bottom: 12px;
       color: var(--text);
+      font-weight: 700;
     }
     .modal p {
       color: var(--muted);
-      margin-bottom: 24px;
+      margin-bottom: 28px;
       line-height: 1.6;
+      font-size: 0.95rem;
     }
     .modal-actions {
       display: flex;
@@ -198,65 +254,86 @@
     }
     .modal-actions button {
       flex: 1;
-      padding: 10px;
+      padding: 12px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
+      font-size: 0.95rem;
+    }
+    .action-buttons {
+      margin-top: 32px;
+      display: flex;
+      gap: 12px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>Account Settings</h1>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-title">👤 Account</div>
       <a href="/" class="back-button">← Back to FinRead</a>
     </div>
+  </div>
 
+  <div class="container">
     <div id="message" class="message"></div>
 
-    <!-- Profile Card -->
-    <div class="card">
-      <div class="card-title">Profile Information</div>
-      <div class="info-row">
-        <span class="info-label">Name</span>
-        <span class="info-value" id="userName">-</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Email</span>
-        <span class="info-value" id="userEmail">-</span>
-      </div>
-    </div>
+    <!-- Profile & Subscription Grid -->
+    <div class="content-grid">
+      <!-- Profile Card -->
+      <div class="card">
+        <div class="card-icon">👤</div>
+        <div class="card-title">Profile</div>
+        <div class="card-subtitle">Your account information</div>
 
-    <!-- Trial Status Card -->
-    <div class="card">
-      <div class="card-title">Subscription</div>
-      <div id="trialCard" class="trial-status">
-        <div class="trial-days" id="daysLeft">-</div>
-        <div class="trial-label">Days remaining in free trial</div>
+        <div class="info-block">
+          <div class="info-label">Name</div>
+          <div class="info-value" id="userName">-</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Email Address</div>
+          <div class="info-value" id="userEmail">-</div>
+        </div>
       </div>
-      <div class="info-row">
-        <span class="info-label">Plan</span>
-        <span class="info-value" id="planType">Free</span>
-      </div>
-      <div class="info-row">
-        <span class="info-label">Status</span>
-        <span class="info-value" id="planStatus">Active</span>
+
+      <!-- Subscription Card -->
+      <div class="card">
+        <div class="card-icon">✨</div>
+        <div class="card-title">Subscription</div>
+        <div class="card-subtitle">Your plan & trial status</div>
+
+        <div id="trialCard" class="trial-highlight">
+          <div class="trial-days" id="daysLeft">-</div>
+          <div class="trial-label">days free trial remaining</div>
+        </div>
+
+        <div class="info-block">
+          <div class="info-label">Current Plan</div>
+          <div class="info-value" id="planType">Free</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Status</div>
+          <div class="info-value" id="planStatus">Active</div>
+        </div>
       </div>
     </div>
 
     <!-- Danger Zone -->
-    <div class="card">
-      <div class="card-title" style="color: #ff6b6b;">Danger Zone</div>
-      <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 16px;">
-        Once you delete your account, there is no going back. Please be certain.
+    <div class="card danger-card">
+      <div class="card-icon">⚠️</div>
+      <div class="card-title">Danger Zone</div>
+      <div class="card-subtitle">Irreversible actions</div>
+      <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; margin-top: 12px;">
+        Once you delete your account, there is no going back. All your data, including analyses, watchlist, and settings will be permanently deleted.
       </p>
       <button class="button button-danger" onclick="openDeleteModal()">Delete Account</button>
     </div>
 
     <!-- Action Buttons -->
-    <div style="margin-top: 32px;">
+    <div class="action-buttons">
       <button class="button button-ghost" onclick="logout()">Logout</button>
     </div>
   </div>

@@ -21,10 +21,13 @@ if (!process.env.ANTHROPIC_API_KEY) {
 if (!process.env.STRIPE_SECRET_KEY) {
   console.warn('WARNING: STRIPE_SECRET_KEY is not set. Billing routes will fail.');
 }
+if (!process.env.RESEND_API_KEY) {
+  console.warn('WARNING: RESEND_API_KEY is not set. Email sending will fail.');
+}
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder');
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY || 'dummy_key');
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // 🔒 SECURITY MIDDLEWARE - Applied to all requests
