@@ -318,6 +318,16 @@ app.get('/verify-email', (req, res) => {
   res.sendFile(path.join(__dirname, 'verify-email.html'));
 });
 
+// Password reset page
+app.get('/reset-password', (req, res) => {
+  res.sendFile(path.join(__dirname, 'reset-password.html'));
+});
+
+// Forgot password page
+app.get('/forgot-password', (req, res) => {
+  res.sendFile(path.join(__dirname, 'forgot-password.html'));
+});
+
 // Privacy Policy
 app.get('/privacy-policy', (req, res) => {
   res.sendFile(path.join(__dirname, 'privacy-policy.html'));
@@ -597,6 +607,69 @@ app.post('/api/auth/verify-email', async (req, res) => {
     }
 
     res.json({ success: true, message: 'Email verified successfully!', user: verifiedUser });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Forgot password endpoint
+app.post('/api/auth/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email required' });
+
+    const user = await db.getUserByEmailForReset(email.toLowerCase());
+    if (!user) {
+      return res.status(400).json({ error: 'Email not found' });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    await db.createPasswordResetToken(user.id, resetToken);
+
+    // Send reset email
+    const resetLink = `https://finread.io/reset-password?token=${resetToken}`;
+    try {
+      await resend.emails.send({
+        from: 'onboarding@resend.dev',
+        to: email.toLowerCase(),
+        subject: 'Reset your FinRead password',
+        html: `
+          <h2>Password Reset Request</h2>
+          <p>Hi ${user.email},</p>
+          <p>Click the link below to reset your password:</p>
+          <a href="${resetLink}" style="background-color: #0066cc; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Reset Password</a>
+          <p>Or copy this link: ${resetLink}</p>
+          <p>This link expires in 1 hour.</p>
+          <p>If you didn't request this, you can ignore this email.</p>
+          <p>Best,<br>The FinRead Team</p>
+        `
+      });
+    } catch (emailErr) {
+      console.error('Error sending reset email:', emailErr);
+    }
+
+    res.json({ success: true, message: 'Password reset email sent! Check your inbox.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Reset password endpoint
+app.post('/api/auth/reset-password', async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) return res.status(400).json({ error: 'Token and password required' });
+    if (password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const user = await db.resetPassword(token, passwordHash);
+
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid or expired reset token' });
+    }
+
+    res.json({ success: true, message: 'Password reset successfully!', email: user.email });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

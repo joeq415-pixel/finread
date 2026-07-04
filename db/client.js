@@ -229,6 +229,50 @@ const db = {
       console.error('Error verifying email:', error);
       throw error;
     }
+  },
+
+  // Password reset operations
+  async createPasswordResetToken(userId, token) {
+    try {
+      await sql`
+        INSERT INTO password_reset_tokens (user_id, token, expires_at)
+        VALUES (${userId}, ${token}, CURRENT_TIMESTAMP + INTERVAL '1 hour')
+      `;
+      return true;
+    } catch (error) {
+      console.error('Error creating reset token:', error);
+      throw error;
+    }
+  },
+
+  async resetPassword(token, newPasswordHash) {
+    try {
+      const result = await sql`
+        UPDATE users
+        SET password_hash = ${newPasswordHash}, updated_at = CURRENT_TIMESTAMP
+        WHERE id = (
+          SELECT user_id FROM password_reset_tokens
+          WHERE token = ${token} AND expires_at > CURRENT_TIMESTAMP
+        )
+        RETURNING id, email
+      `;
+
+      if (result.rows.length > 0) {
+        await sql`DELETE FROM password_reset_tokens WHERE token = ${token}`;
+        return result.rows[0];
+      }
+      return null;
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      throw error;
+    }
+  },
+
+  async getUserByEmailForReset(email) {
+    const result = await sql`
+      SELECT id, email FROM users WHERE email = ${email}
+    `;
+    return result.rows[0];
   }
 };
 
