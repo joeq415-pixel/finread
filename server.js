@@ -536,7 +536,7 @@ app.post('/api/auth/register', async (req, res) => {
     const verificationLink = `${process.env.BASE_URL || 'https://finread.io'}/verify-email?token=${verificationToken}`;
     try {
       await resend.emails.send({
-        from: 'noreply@finread.io',
+        from: 'onboarding@resend.dev',
         to: email.toLowerCase(),
         subject: 'Verify your FinRead email',
         html: `
