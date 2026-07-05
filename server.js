@@ -316,6 +316,16 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'finread.html'));
 });
 
+// Health check endpoint for monitoring
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
 // Email verification page
 app.get('/verify-email', (req, res) => {
   res.sendFile(path.join(__dirname, 'verify-email.html'));

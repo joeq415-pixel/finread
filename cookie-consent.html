@@ -1,0 +1,251 @@
+<!-- Cookie Consent Banner -->
+<div id="cookie-consent-banner" class="cookie-consent-banner">
+  <div class="cookie-consent-container">
+    <div class="cookie-consent-content">
+      <div class="cookie-consent-icon">🍪</div>
+      <div class="cookie-consent-text">
+        <h3>Cookie & Privacy Notice</h3>
+        <p>
+          We use cookies and analytics to improve your experience and understand how you use FinRead.
+          By continuing, you agree to our
+          <a href="/privacy-policy" target="_blank">Privacy Policy</a> and
+          <a href="/terms-of-service" target="_blank">Terms of Service</a>.
+        </p>
+      </div>
+    </div>
+    <div class="cookie-consent-actions">
+      <button id="cookie-accept" class="cookie-btn cookie-btn-primary">Accept All</button>
+      <button id="cookie-reject" class="cookie-btn cookie-btn-secondary">Reject</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cookie-consent-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+    padding: 20px;
+    display: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  :root[data-theme="light"] .cookie-consent-banner {
+    background: rgba(255, 255, 255, 0.98);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .cookie-consent-banner.show {
+    display: block;
+  }
+
+  .cookie-consent-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .cookie-consent-content {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .cookie-consent-icon {
+    font-size: 2rem;
+    min-width: 40px;
+  }
+
+  .cookie-consent-text h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin-bottom: 6px;
+  }
+
+  :root[data-theme="light"] .cookie-consent-text h3 {
+    color: #0F172A;
+  }
+
+  .cookie-consent-text p {
+    font-size: 0.875rem;
+    color: #94A3B8;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  :root[data-theme="light"] .cookie-consent-text p {
+    color: #64748B;
+  }
+
+  .cookie-consent-text a {
+    color: #0EA5E9;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .cookie-consent-text a:hover {
+    text-decoration: underline;
+  }
+
+  .cookie-consent-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    min-width: 200px;
+    justify-content: flex-end;
+  }
+
+  .cookie-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    white-space: nowrap;
+  }
+
+  .cookie-btn-primary {
+    background: #22C55E;
+    color: #000;
+  }
+
+  .cookie-btn-primary:hover {
+    background: #20a84f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  }
+
+  .cookie-btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #F8FAFC;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  :root[data-theme="light"] .cookie-btn-secondary {
+    background: rgba(0, 0, 0, 0.05);
+    color: #0F172A;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .cookie-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  :root[data-theme="light"] .cookie-btn-secondary:hover {
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  @media (max-width: 768px) {
+    .cookie-consent-container {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .cookie-consent-content {
+      order: 1;
+    }
+
+    .cookie-consent-actions {
+      order: 2;
+      justify-content: stretch;
+    }
+
+    .cookie-btn {
+      flex: 1;
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    const COOKIE_CONSENT_KEY = 'finread-cookie-consent';
+    const COOKIE_CONSENT_EXPIRES = 365 * 24 * 60 * 60 * 1000; // 1 year
+
+    function initCookieConsent() {
+      const banner = document.getElementById('cookie-consent-banner');
+      const acceptBtn = document.getElementById('cookie-accept');
+      const rejectBtn = document.getElementById('cookie-reject');
+
+      if (!banner || !acceptBtn || !rejectBtn) return;
+
+      // Check if user has already consented
+      const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
+      if (!consent) {
+        // Show banner
+        banner.classList.add('show');
+      }
+
+      acceptBtn.addEventListener('click', () => {
+        setConsentCookie(true);
+        banner.classList.remove('show');
+        // Enable analytics here if you use any
+        enableAnalytics();
+      });
+
+      rejectBtn.addEventListener('click', () => {
+        setConsentCookie(false);
+        banner.classList.remove('show');
+        // Disable analytics
+        disableAnalytics();
+      });
+    }
+
+    function setConsentCookie(accepted) {
+      const timestamp = new Date().getTime();
+      localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify({
+        accepted: accepted,
+        timestamp: timestamp
+      }));
+    }
+
+    function hasUserConsented() {
+      const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
+      if (!consent) return false;
+      try {
+        const data = JSON.parse(consent);
+        return data.accepted === true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function enableAnalytics() {
+      // Add your analytics code here (Google Analytics, Mixpanel, etc.)
+      console.log('Analytics enabled');
+    }
+
+    function disableAnalytics() {
+      // Disable analytics tracking
+      console.log('Analytics disabled');
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCookieConsent);
+    } else {
+      initCookieConsent();
+    }
+
+    // Export functions globally
+    window.CookieConsent = {
+      hasConsented: hasUserConsented,
+      accept: () => setConsentCookie(true),
+      reject: () => setConsentCookie(false)
+    };
+  })();
+</script>
