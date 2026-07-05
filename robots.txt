@@ -1,0 +1,54 @@
+# FinRead robots.txt
+# Defines crawl directives for search engines
+
+# Allow all bots to crawl the site
+User-agent: *
+Allow: /
+
+# Disallow crawling of dynamic authentication pages
+Disallow: /reset-password
+Disallow: /verify-email
+
+# Disallow user-specific account pages
+Disallow: /account
+
+# Disallow private/sensitive paths
+Disallow: /api/
+
+# Allow crawling of static assets
+Allow: *.js
+Allow: *.css
+Allow: *.png
+Allow: *.jpg
+Allow: *.jpeg
+Allow: *.gif
+Allow: *.svg
+
+# Sitemap location
+Sitemap: https://finread.io/sitemap.xml
+
+# Crawl delay (requests per second)
+Crawl-delay: 1
+
+# Google-specific rules
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Bing-specific rules
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /

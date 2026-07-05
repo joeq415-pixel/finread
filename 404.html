@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found - FinRead</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    :root {
+      --bg: #0F172A;
+      --bg2: #1A2847;
+      --text: #F8FAFC;
+      --muted: #94A3B8;
+      --accent: #22C55E;
+      --accent2: #0EA5E9;
+      --border: rgba(255,255,255,0.1);
+    }
+    :root[data-theme="light"] {
+      --bg: #FFFFFF;
+      --bg2: #F8FAFC;
+      --text: #0F172A;
+      --muted: #64748B;
+      --accent: #22C55E;
+      --accent2: #0EA5E9;
+      --border: rgba(0,0,0,0.1);
+    }
+    body {
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    :root[data-theme="dark"] body {
+      background: linear-gradient(135deg, #0F172A 0%, #0a0f1e 100%);
+    }
+    .container {
+      max-width: 700px;
+      width: 100%;
+      text-align: center;
+    }
+    .error-code {
+      font-size: 8rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 20px;
+      letter-spacing: -2px;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+    .suggestions {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 40px;
+      text-align: left;
+    }
+    :root[data-theme="light"] .suggestions {
+      background: #F8FAFC;
+    }
+    .suggestions h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .suggestions ul {
+      list-style: none;
+    }
+    .suggestions li {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .suggestions li:last-child {
+      border-bottom: none;
+    }
+    .suggestions li a {
+      color: var(--accent2);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .suggestions li a:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+    .icon {
+      font-size: 1.2rem;
+      min-width: 24px;
+    }
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .button {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .button-primary {
+      background: var(--accent);
+      color: #000;
+    }
+    .button-primary:hover {
+      background: #20a84f;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+    }
+    .button-secondary {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+    }
+    .button-secondary:hover {
+      background: var(--bg2);
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+    :root[data-theme="light"] .button-secondary:hover {
+      background: #F0F9FF;
+    }
+    .footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .footer a {
+      color: var(--accent2);
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="error-code">404</div>
+    <h1>Page Not Found</h1>
+    <p class="subtitle">
+      The page you're looking for doesn't exist or has been moved.
+      Let's get you back on track!
+    </p>
+
+    <div class="suggestions">
+      <h2>Here are some helpful links:</h2>
+      <ul>
+        <li><span class="icon">🏠</span> <a href="/">Back to Home</a></li>
+        <li><span class="icon">🔍</span> <a href="/">Search EDGAR</a></li>
+        <li><span class="icon">📊</span> <a href="/">My Reports</a></li>
+        <li><span class="icon">❓</span> <a href="/contact">Contact Support</a></li>
+      </ul>
+    </div>
+
+    <div class="buttons">
+      <a href="/" class="button button-primary">Go to Home</a>
+      <a href="/contact" class="button button-secondary">Contact Support</a>
+    </div>
+
+    <div class="footer">
+      <p>Error Code: 404 | <a href="/">FinRead</a> © 2024</p>
+    </div>
+  </div>
+
+  <script>
+    // Load theme from localStorage
+    const theme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+  </script>
+</body>
+</html>

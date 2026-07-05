@@ -6330,6 +6330,18 @@ async function startServer() {
 // ── STATIC FILES (must come AFTER all API routes) ──────────────────────────────
 app.use(express.static(__dirname));
 
+// ── ERROR HANDLERS ────────────────────────────────────────────────────────────
+// 404 handler - serve custom 404 page for undefined routes
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, '404.html'));
+});
+
+// Global error handler - catch all unhandled errors
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).sendFile(path.join(__dirname, '500.html'));
+});
+
 // Start server locally, export app for Vercel serverless
 if (require.main === module) {
   startServer();

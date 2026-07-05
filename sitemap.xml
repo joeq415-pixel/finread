@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:mobile="http://www.mobile.googlebot.com/schemas/mobile/1.0"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+
+  <!-- Home Page -->
+  <url>
+    <loc>https://finread.io/</loc>
+    <lastmod>2024-07-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Legal Pages -->
+  <url>
+    <loc>https://finread.io/privacy-policy</loc>
+    <lastmod>2024-07-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://finread.io/terms-of-service</loc>
+    <lastmod>2024-07-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Support Pages -->
+  <url>
+    <loc>https://finread.io/contact</loc>
+    <lastmod>2024-07-04</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Authentication Pages (only for discovery) -->
+  <url>
+    <loc>https://finread.io/verify-email</loc>
+    <lastmod>2024-07-04</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://finread.io/forgot-password</loc>
+    <lastmod>2024-07-04</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Account Page (requires authentication, low priority) -->
+  <url>
+    <loc>https://finread.io/account</loc>
+    <lastmod>2024-07-04</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.2</priority>
+  </url>
+
+</urlset>
