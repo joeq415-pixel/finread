@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const Anthropic = require('@anthropic-ai/sdk');
 const Stripe = require('stripe');
 const { Resend } = require('resend');
+const { sql } = require('@vercel/postgres');
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');
@@ -87,8 +88,8 @@ app.use((req, res, next) => {
 });
 
 // 3. Request Size Limits - Prevent DOS via large payloads
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ limit: '10mb', extended: true }));
+// NOTE: express.json() and urlencoded() are defined later (line 313+)
+// AFTER the Stripe webhook route to avoid parsing the webhook body
 
 // 4. Global Rate Limiting - Prevent abuse
 const globalRateLimits = new Map();
@@ -311,6 +312,7 @@ async function calculateAndStoreTrends(ticker, formType) {
 app.post('/api/billing/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 
 app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'finread.html'));
@@ -5990,10 +5992,14 @@ Keep it to 2-3 paragraphs in plain English.`;
 
 app.post('/api/billing/create-checkout-session', authMiddleware, async (req, res) => {
   try {
-    const users = await readJSON(USERS_FILE);
-    const idx = users.findIndex(u => u.id === req.user.id);
-    if (idx === -1) return res.status(404).json({ error: 'Account not found' });
-    const user = normalizeUser(users[idx]);
+    if (!process.env.STRIPE_PRICE_ID_PRO) {
+      return res.status(400).json({ error: 'Stripe Pro price not configured. Add STRIPE_PRICE_ID_PRO to .env' });
+    }
+
+    const user = await db.getUserById(req.user.id);
+    if (!user) return res.status(404).json({ error: 'Account not found' });
+
+    const subscription = await db.getSubscriptionByUserId(req.user.id);
 
     const origin = req.headers.origin || `http://localhost:${PORT}`;
     const session = await stripe.checkout.sessions.create({
@@ -6002,7 +6008,7 @@ app.post('/api/billing/create-checkout-session', authMiddleware, async (req, res
       success_url: `${origin}/finread.html?upgrade=success`,
       cancel_url: `${origin}/finread.html?upgrade=cancelled`,
       client_reference_id: user.id,
-      ...(user.stripeCustomerId ? { customer: user.stripeCustomerId } : { customer_email: user.email }),
+      ...(subscription?.stripe_customer_id ? { customer: subscription.stripe_customer_id } : { customer_email: user.email }),
     });
 
     res.json({ url: session.url });
@@ -6014,15 +6020,14 @@ app.post('/api/billing/create-checkout-session', authMiddleware, async (req, res
 
 app.post('/api/billing/create-portal-session', authMiddleware, async (req, res) => {
   try {
-    const users = await readJSON(USERS_FILE);
-    const user = normalizeUser(users.find(u => u.id === req.user.id) || {});
-    if (!user.stripeCustomerId) {
+    const subscription = await db.getSubscriptionByUserId(req.user.id);
+    if (!subscription?.stripe_customer_id) {
       return res.status(400).json({ error: 'No billing account found. Subscribe to Pro first.' });
     }
 
     const origin = req.headers.origin || `http://localhost:${PORT}`;
     const session = await stripe.billingPortal.sessions.create({
-      customer: user.stripeCustomerId,
+      customer: subscription.stripe_customer_id,
       return_url: `${origin}/finread.html`,
     });
 
@@ -6053,23 +6058,54 @@ async function handleStripeWebhook(req, res) {
   }
 
   try {
+    console.log(`📨 Webhook received: ${event.type}`);
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object;
-        await setUserTierByField('id', session.client_reference_id, {
-          tier: 'pro',
-          stripeCustomerId: session.customer,
-          stripeSubscriptionId: session.subscription,
-        });
+        const userId = session.client_reference_id;
+        console.log(`🔔 checkout.session.completed for user ${userId}`);
+
+        // Create or update subscription to 'pro'
+        let subscription = await db.getSubscriptionByUserId(userId);
+        if (!subscription) {
+          await db.createSubscription(userId, session.customer, 'pro');
+          console.log(`✅ Subscription created for user ${userId}, customer ${session.customer}, plan: pro`);
+        } else {
+          // Update existing subscription to pro
+          await db.updateSubscription(userId, {
+            stripe_subscription_id: session.subscription,
+            status: 'active',
+            current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Estimate 30 days
+          });
+          // Manually update plan_type to pro since updateSubscription doesn't handle it
+          await sql`UPDATE subscriptions SET plan_type = 'pro' WHERE user_id = ${userId}`;
+          console.log(`✅ Subscription updated to pro for user ${userId}`);
+        }
         break;
       }
-      case 'customer.subscription.updated':
-      case 'customer.subscription.deleted': {
+      case 'customer.subscription.updated': {
         const subscription = event.data.object;
         const isActive = subscription.status === 'active' || subscription.status === 'trialing';
-        await setUserTierByField('stripeCustomerId', subscription.customer, {
-          tier: isActive ? 'pro' : 'free',
-        });
+        const dbSubscription = await db.getSubscriptionByStripeCustomerId(subscription.customer);
+
+        if (dbSubscription) {
+          await db.updateSubscription(dbSubscription.user_id, {
+            stripe_subscription_id: subscription.id,
+            status: isActive ? 'active' : subscription.status,
+            current_period_end: new Date(subscription.current_period_end * 1000)
+          });
+        }
+        console.log(`✅ Subscription updated for customer ${subscription.customer}`);
+        break;
+      }
+      case 'customer.subscription.deleted': {
+        const subscription = event.data.object;
+        const dbSubscription = await db.getSubscriptionByStripeCustomerId(subscription.customer);
+
+        if (dbSubscription) {
+          await db.cancelSubscription(dbSubscription.user_id, new Date());
+        }
+        console.log(`✅ Subscription cancelled for customer ${subscription.customer}`);
         break;
       }
     }
