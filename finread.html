@@ -1260,10 +1260,18 @@
           <div style="position:absolute; top:-12px; right:20px; background:linear-gradient(135deg, var(--accent), var(--accent2)); color:#000; padding:4px 12px; border-radius:20px; font-size:0.7rem; font-weight:700; letter-spacing:0.5px;">MOST POPULAR</div>
           <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
             <div style="width:40px; height:40px; background:rgba(34,197,94,0.2); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.4rem;">⭐</div>
-            <div>
+            <div style="width:100%;">
               <p style="font-weight:700; font-size:1.1rem; margin:0;">Pro</p>
               <p style="font-size:0.8rem; color:var(--muted); margin:0;">Unlimited analyses</p>
-              <p style="font-size:1.2rem; font-weight:700; margin:4px 0 0 0; color:var(--accent);">$4.99/month</p>
+              <div style="display:flex; gap:12px; margin-top:12px; font-size:0.9rem;">
+                <button onclick="selectPricingOption('monthly')" id="monthly-btn" style="flex:1; padding:8px 12px; background:var(--accent); color:#000; border:none; border-radius:6px; font-weight:600; cursor:pointer; transition:all 0.2s;">
+                  $4.99/mo
+                </button>
+                <button onclick="selectPricingOption('annual')" id="annual-btn" style="flex:1; padding:8px 12px; background:transparent; color:var(--accent); border:1.5px solid var(--accent); border-radius:6px; font-weight:600; cursor:pointer; transition:all 0.2s;">
+                  $49.99/yr <span style="font-size:0.75rem; color:var(--accent);">-16%</span>
+                </button>
+              </div>
+              <p id="price-display" style="font-size:1rem; font-weight:700; margin:8px 0 0 0; color:var(--accent); text-align:center;">$4.99/month</p>
             </div>
           </div>
           <div style="border-top:1px solid rgba(34,197,94,0.2); padding-top:16px;">
@@ -5600,6 +5608,34 @@ async function submitFlag() {
   }
 }
 
+// Track selected pricing option
+let selectedPricingOption = 'monthly';
+
+function selectPricingOption(option) {
+  selectedPricingOption = option;
+  const monthlyBtn = document.getElementById('monthly-btn');
+  const annualBtn = document.getElementById('annual-btn');
+  const priceDisplay = document.getElementById('price-display');
+
+  if (option === 'monthly') {
+    monthlyBtn.style.background = 'var(--accent)';
+    monthlyBtn.style.color = '#000';
+    monthlyBtn.style.borderColor = 'var(--accent)';
+    annualBtn.style.background = 'transparent';
+    annualBtn.style.color = 'var(--accent)';
+    annualBtn.style.borderColor = 'var(--accent)';
+    priceDisplay.textContent = '$4.99/month';
+  } else {
+    annualBtn.style.background = 'var(--accent)';
+    annualBtn.style.color = '#000';
+    annualBtn.style.borderColor = 'var(--accent)';
+    monthlyBtn.style.background = 'transparent';
+    monthlyBtn.style.color = 'var(--accent)';
+    monthlyBtn.style.borderColor = 'var(--accent)';
+    priceDisplay.textContent = '$49.99/year (Save 16%)';
+  }
+}
+
 async function startCheckout() {
   if (!currentUser) { closePricingModal(); return openModal(); }
   const btn = document.getElementById('pricing-upgrade-btn');
@@ -5610,7 +5646,8 @@ async function startCheckout() {
   try {
     const res = await fetch(`${API}/api/billing/create-checkout-session`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${authToken}` },
+      headers: { Authorization: `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ billingPeriod: selectedPricingOption }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);

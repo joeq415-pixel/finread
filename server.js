@@ -5992,7 +5992,12 @@ Keep it to 2-3 paragraphs in plain English.`;
 
 app.post('/api/billing/create-checkout-session', authMiddleware, async (req, res) => {
   try {
-    if (!process.env.STRIPE_PRICE_ID_PRO) {
+    const { billingPeriod } = req.body;
+
+    // Determine which price ID to use
+    const priceId = billingPeriod === 'annual' ? process.env.STRIPE_PRICE_ID_PRO_ANNUAL : process.env.STRIPE_PRICE_ID_PRO;
+
+    if (!priceId) {
       return res.status(400).json({ error: 'Stripe Pro price not configured. Add STRIPE_PRICE_ID_PRO to .env' });
     }
 
@@ -6004,7 +6009,7 @@ app.post('/api/billing/create-checkout-session', authMiddleware, async (req, res
     const origin = req.headers.origin || `http://localhost:${PORT}`;
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
-      line_items: [{ price: process.env.STRIPE_PRICE_ID_PRO, quantity: 1 }],
+      line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${origin}/finread.html?upgrade=success`,
       cancel_url: `${origin}/finread.html?upgrade=cancelled`,
       client_reference_id: user.id,
