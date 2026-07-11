@@ -740,12 +740,19 @@
     body.filing-mode {
       overflow: hidden;
     }
+    body.filing-mode .hero,
+    body.filing-mode .features-section,
+    body.filing-mode .how-it-works,
+    body.filing-mode .pricing,
     body.filing-mode #edgar-panel,
-    body.filing-mode #edgar-results,
     body.filing-mode #process-section,
-    body.filing-mode footer,
-    body.filing-mode body::before {
-      display: none;
+    body.filing-mode footer {
+      display: none !important;
+    }
+    body.filing-mode main {
+      display: block !important;
+      overflow-y: auto !important;
+      height: calc(100vh - 60px) !important;
     }
 
     .reader-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; gap: 16px; flex-wrap: wrap; }
