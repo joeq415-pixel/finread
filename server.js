@@ -656,7 +656,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     const resetLink = `https://finread.io/reset-password?token=${resetToken}`;
     try {
       await resend.emails.send({
-        from: 'onboarding@resend.dev',
+        from: 'FinRead <noreply@finread.io>',
         to: email.toLowerCase(),
         subject: 'Reset your FinRead password',
         html: `
@@ -711,7 +711,7 @@ app.post('/api/contact', async (req, res) => {
     // Send email to admin
     try {
       await resend.emails.send({
-        from: 'onboarding@resend.dev',
+        from: 'FinRead <noreply@finread.io>',
         to: 'joeq415@gmail.com',
         subject: `FinRead Contact: ${subject}`,
         html: `
