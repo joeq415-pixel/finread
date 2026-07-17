@@ -3617,7 +3617,7 @@ app.post('/api/qa', authMiddleware, async (req, res) => {
     }
 
     // 4. RATE LIMITING FOR PRO FEATURES - Higher limits for pro users
-    const user = await getUserById(userId);
+    const user = await db.getUserById(userId);
     const isProUser = user?.tier === 'pro' || user?.isEffectivelyPro;
     if (!isProUser && question.length > 500) {
       await logQAQuestion(userId, ticker, question, true, 'length-limit-free-user');
