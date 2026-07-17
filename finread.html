@@ -6969,6 +6969,7 @@ function resetToSearch() {
   const readerEl = document.getElementById('reader');
   if (readerEl) {
     readerEl.classList.remove('fullscreen');
+    readerEl.style.display = 'none';
     document.body.classList.remove('filing-mode');
   }
   document.getElementById('ask-ai-btn').style.display = 'none';
