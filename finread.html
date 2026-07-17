@@ -6251,6 +6251,14 @@ function animateNumber(element, target, duration = 1000) {
 }
 
 // Initialize filing hint on page load with default value (10-K)
+// Handle browser back button
+window.addEventListener('popstate', function(event) {
+  if (event.state && event.state.view === 'analysis') {
+    // Going back from analysis view - reset to search
+    resetToSearch();
+  }
+});
+
 document.addEventListener('DOMContentLoaded', function() {
   window.scrollTo(0, 0);
   applyTheme();
@@ -6545,6 +6553,8 @@ async function analyzeEdgarFiling(ticker, accessionNumber, primaryDocument, form
     };
 
     showReader(currentAnalysis);
+    // Add to browser history so back button works
+    history.pushState({ view: 'analysis' }, '', window.location.href);
     refreshAccountUsage();
   } catch (err) {
     hideLoadingState();
