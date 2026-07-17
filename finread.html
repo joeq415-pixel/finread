@@ -3953,6 +3953,13 @@ async function isQuestionOnTopic(question) {
 
 async function submitQuestion() {
   if (!currentUser || !currentAnalysis) return;
+
+  if (!currentUser.emailVerified) {
+    showToast('Please verify your email before asking questions.', 'error');
+    window.location.href = '/verify-email';
+    return;
+  }
+
   const question = document.getElementById('qa-input').value.trim();
   if (!question) return;
 
@@ -6275,6 +6282,19 @@ async function searchEdgar() {
     return;
   }
 
+  // Check if user is logged in and verified
+  if (!currentUser) {
+    showToast('Please sign in to search filings.', 'error');
+    openModal();
+    return;
+  }
+
+  if (!currentUser.emailVerified) {
+    showToast('Please verify your email before accessing tools.', 'error');
+    window.location.href = '/verify-email';
+    return;
+  }
+
   const ticker = tickerEl.value.trim();
   const form = formEl.value;
 
@@ -6360,6 +6380,13 @@ async function analyzeEdgarFiling(ticker, accessionNumber, primaryDocument, form
     showToast('Please sign in to analyze a filing — it\'s free.', 'error');
     return openModal();
   }
+
+  if (!currentUser.emailVerified) {
+    showToast('Please verify your email before analyzing filings.', 'error');
+    window.location.href = '/verify-email';
+    return;
+  }
+
   showLoadingState(`Fetching ${ticker.toUpperCase()} ${formType} from SEC EDGAR…`);
 
   // Initialize streaming analysis data

@@ -592,7 +592,7 @@ app.post('/api/auth/register', async (req, res) => {
     const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '30d' });
     res.json({
       token,
-      user: { id: user.id, email: user.email, name: user.name, tier: 'free' },
+      user: { id: user.id, email: user.email, name: user.name, tier: 'free', emailVerified: false },
       message: 'Account created! Check your email to verify your address.'
     });
   } catch (err) {
@@ -614,7 +614,7 @@ app.post('/api/auth/login', async (req, res) => {
     }
 
     const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '30d' });
-    res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
+    res.json({ token, user: { id: user.id, email: user.email, name: user.name, emailVerified: user.email_verified } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -631,7 +631,7 @@ app.post('/api/auth/verify-email', async (req, res) => {
       return res.status(400).json({ error: 'Invalid or expired verification token' });
     }
 
-    res.json({ success: true, message: 'Email verified successfully!', user: verifiedUser });
+    res.json({ success: true, message: 'Email verified successfully!', user: { id: verifiedUser.id, email: verifiedUser.email, emailVerified: verifiedUser.email_verified } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
