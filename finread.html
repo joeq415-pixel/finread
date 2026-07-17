@@ -6251,11 +6251,14 @@ function animateNumber(element, target, duration = 1000) {
 }
 
 // Initialize filing hint on page load with default value (10-K)
-// Handle browser back button
-window.addEventListener('popstate', function(event) {
-  if (event.state && event.state.view === 'analysis') {
-    // Going back from analysis view - reset to search
-    resetToSearch();
+// Handle browser back button using URL hash
+window.addEventListener('hashchange', function() {
+  const hash = window.location.hash;
+  if (!hash || hash === '#search') {
+    // Going back to search view
+    if (document.getElementById('reader').style.display !== 'none') {
+      resetToSearch();
+    }
   }
 });
 
@@ -6553,8 +6556,8 @@ async function analyzeEdgarFiling(ticker, accessionNumber, primaryDocument, form
     };
 
     showReader(currentAnalysis);
-    // Add to browser history so back button works
-    history.pushState({ view: 'analysis' }, '', window.location.href);
+    // Add to browser history using URL hash so back button works
+    window.location.hash = `analysis/${ticker}/${formType}`;
     refreshAccountUsage();
   } catch (err) {
     hideLoadingState();
@@ -6991,6 +6994,8 @@ function resetToSearch() {
   const resultsEl = document.getElementById('edgar-results');
   resultsEl.innerHTML = '';
   resultsEl.style.display = 'none';
+  // Clear URL hash
+  window.location.hash = '';
   window.scrollTo({ top: 0, behavior: 'smooth' });
   document.getElementById('edgar-ticker').focus();
 }
