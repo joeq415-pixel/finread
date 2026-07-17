@@ -6979,7 +6979,7 @@ function setMobilePanelView(view) {
 }
 
 function resetToSearch() {
-  // Deactivate fullscreen filing view
+  // Deactivate fullscreen filing view (but keep currentAnalysis for forward button)
   const readerEl = document.getElementById('reader');
   if (readerEl) {
     readerEl.classList.remove('fullscreen');
@@ -6988,7 +6988,7 @@ function resetToSearch() {
   }
   document.getElementById('ask-ai-btn').style.display = 'none';
   document.getElementById('save-bar').classList.remove('visible');
-  currentAnalysis = null;
+  // Don't clear currentAnalysis so forward button can restore it
   document.getElementById('loading-state').style.display = 'none';
   document.getElementById('edgar-panel').style.display = 'block';
   // Clear and hide results
