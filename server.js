@@ -568,7 +568,8 @@ app.post('/api/auth/register', async (req, res) => {
     await db.createVerificationToken(user.id, verificationToken);
 
     // Send verification email
-    const verificationLink = `https://finread.io/verify-email?token=${verificationToken}`;
+    const origin = process.env.DOMAIN || 'https://finread.io';
+    const verificationLink = `${origin}/verify-email?token=${verificationToken}`;
     try {
       await resend.emails.send({
         from: 'FinRead <noreply@finread.io>',
