@@ -995,6 +995,9 @@
     .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     .toast.success { border-color: rgba(34,197,94,0.3); color: var(--accent); }
     .toast.error { border-color: rgba(239,68,68,0.3); color: var(--danger); }
+    :root[data-theme="light"] .toast { background: #FFFFFF; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+    :root[data-theme="light"] .toast.success { border-color: rgba(34,197,94,0.5); color: #15803d; }
+    :root[data-theme="light"] .toast.error { border-color: rgba(239,68,68,0.5); color: #991b1b; }
 
     /* ── MISC ── */
     footer { border-top: 1px solid var(--border); padding: 28px 24px; text-align: center; color: var(--muted); font-size: 0.8rem; position: relative; z-index: 1; }
