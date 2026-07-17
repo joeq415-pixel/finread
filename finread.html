@@ -3347,6 +3347,52 @@ function closeModal() {
   clearAuthError();
 }
 
+function showEmailVerificationReminder() {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay open';
+  modal.id = 'verification-reminder-modal';
+  modal.onclick = (e) => { if (e.target === modal) closeVerificationReminder(); };
+
+  modal.innerHTML = `
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal-header">
+        <div class="modal-title">📧 Verify Your Email</div>
+        <button class="modal-close" onclick="closeVerificationReminder()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text); margin: 0;">
+          Welcome to FinRead! We've sent a verification link to <strong>${currentUser.email}</strong>.
+        </p>
+        <div style="background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.3); border-radius: 8px; padding: 16px; margin: 20px 0;">
+          <p style="margin: 0; font-size: 0.9rem; color: var(--text);"><strong>⚠️ Important:</strong></p>
+          <p style="margin: 8px 0 0 0; font-size: 0.85rem; color: var(--muted);">
+            You need to verify your email address to access all features. Check your inbox (and spam folder) for the verification email.
+          </p>
+        </div>
+        <p style="font-size: 0.9rem; color: var(--muted); margin: 0;">
+          Once you verify, you'll be able to:
+        </p>
+        <ul style="font-size: 0.9rem; color: var(--text); margin: 8px 0 0 0; padding-left: 20px;">
+          <li>Search and analyze filings</li>
+          <li>Ask AI questions about documents</li>
+          <li>Create watchlists and save reports</li>
+        </ul>
+      </div>
+      <div style="padding: 0 28px 20px; display: flex; gap: 12px;">
+        <button class="btn btn-ghost" style="flex: 1;" onclick="closeVerificationReminder()">I'll Verify Later</button>
+        <button class="btn btn-primary" style="flex: 1;" onclick="window.location.href='/verify-email'">Go to Verification</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+}
+
+function closeVerificationReminder() {
+  const modal = document.getElementById('verification-reminder-modal');
+  if (modal) modal.remove();
+}
+
 // ── PRICING / BILLING ─────────────────────────────────────────────────────────
 
 function openPricingModal(message) {
@@ -5792,6 +5838,11 @@ async function submitAuth() {
     updateFilingTypeOptions();
     closeModal();
     showToast(`Welcome, ${currentUser.name}!`, 'success');
+
+    // Show email verification reminder for new signups
+    if (authMode === 'register' && !currentUser.emailVerified) {
+      showEmailVerificationReminder();
+    }
 
     if (currentAnalysis) updateSaveBar();
   } catch (err) {
