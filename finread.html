@@ -6976,7 +6976,10 @@ function resetToSearch() {
   currentAnalysis = null;
   document.getElementById('loading-state').style.display = 'none';
   document.getElementById('edgar-panel').style.display = 'block';
-  document.getElementById('edgar-results').style.display = 'none';
+  // Clear and hide results
+  const resultsEl = document.getElementById('edgar-results');
+  resultsEl.innerHTML = '';
+  resultsEl.style.display = 'none';
   window.scrollTo({ top: 0, behavior: 'smooth' });
   document.getElementById('edgar-ticker').focus();
 }
