@@ -99,6 +99,7 @@
     /* ── MODAL ── */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; display: none; align-items: center; justify-content: center; padding: 24px; backdrop-filter: blur(8px); }
     .modal-overlay.open { display: flex; }
+    :root[data-theme="light"] .modal-overlay { background: rgba(0,0,0,0.2); }
 
     .modal { background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%); border: 1px solid var(--border); border-radius: var(--radius-lg); width: 100%; max-width: 440px; max-height: 90vh; animation: modalIn 0.3s cubic-bezier(0.23, 1, 0.32, 1); overflow: auto; scrollbar-width: none; -ms-overflow-style: none; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4); }
     :root[data-theme="light"] .modal { background: #FFFFFF; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1); }
@@ -132,6 +133,7 @@
 
     .modal-error { font-size: 0.8rem; color: var(--danger); background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); border-radius: 10px; padding: 12px 14px; display: none; }
     .modal-error.show { display: block; }
+    :root[data-theme="light"] .modal-error { background: rgba(239,68,68,0.06); color: #7F1D1D; border-color: rgba(239,68,68,0.4); }
 
     /* ── TOUR (Modern Modal) ── */
     #tour-modal {
