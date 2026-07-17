@@ -5840,7 +5840,7 @@ async function submitAuth() {
     showToast(`Welcome, ${currentUser.name}!`, 'success');
 
     // Show email verification reminder for new signups
-    if (authMode === 'signup' && !currentUser.emailVerified) {
+    if (authMode === 'register' && !currentUser.emailVerified) {
       showEmailVerificationReminder();
     }
 
