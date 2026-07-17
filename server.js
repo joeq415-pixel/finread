@@ -3559,6 +3559,14 @@ function detectPromptInjection(question) {
   return injectionPatterns.some(pattern => pattern.test(question));
 }
 
+// Cache for filing analysis (company name, key metrics, etc)
+async function getCachedAnalysis(ticker, accessionNumber) {
+  // Returns cached analysis data for a filing
+  // For now, returns null - company name validation uses ticker as fallback
+  // This can be extended to cache XBRL analysis in the future
+  return null;
+}
+
 // Audit log for QA questions
 async function logQAQuestion(userId, ticker, question, isRejected, reason) {
   try {
