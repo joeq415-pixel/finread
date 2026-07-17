@@ -6247,13 +6247,18 @@ function animateNumber(element, target, duration = 1000) {
 }
 
 // Initialize filing hint on page load with default value (10-K)
-// Handle browser back button using URL hash
+// Handle browser back/forward buttons using URL hash
 window.addEventListener('hashchange', function() {
   const hash = window.location.hash;
   if (!hash || hash === '#search') {
     // Going back to search view
     if (document.getElementById('reader').style.display !== 'none') {
       resetToSearch();
+    }
+  } else if (hash.startsWith('#analysis/')) {
+    // Going forward to analysis view - show reader if analysis data exists
+    if (currentAnalysis && document.getElementById('reader').style.display === 'none') {
+      showReader(currentAnalysis);
     }
   }
 });
