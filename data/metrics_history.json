@@ -264,5 +264,33 @@
     "healthScore": 0,
     "filingUrl": "https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/index.html",
     "storedAt": "2026-06-30T03:32:28.867Z"
+  },
+  {
+    "ticker": "AAPL",
+    "filingDate": "2026-07-11",
+    "formType": "10-K",
+    "revenue": 416.2,
+    "grossProfit": 195.2,
+    "operatingIncome": 133.1,
+    "netIncome": null,
+    "operatingCashFlow": 111.5,
+    "capex": -12.7,
+    "freeCashFlow": 98.8,
+    "totalAssets": 359.2,
+    "currentAssets": 148,
+    "liabilities": 285.5,
+    "currentLiabilities": 165.6,
+    "roic": "37.05",
+    "operatingExpenseRatio": "68.02",
+    "fcfYield": "27.51",
+    "capexIntensity": "3.05",
+    "workingCapitalPercent": "-4.23",
+    "netDebtToFCF": "1.39",
+    "daToRevenue": "14.92",
+    "returnOnCapex": "10.48",
+    "grossMargin": "46.90",
+    "healthScore": 0,
+    "filingUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/index.html",
+    "storedAt": "2026-07-11T16:49:20.384Z"
   }
 ]

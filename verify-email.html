@@ -209,6 +209,12 @@
         const data = await response.json();
 
         if (response.ok) {
+          // Update localStorage with verified email status
+          if (data.user) {
+            const storedUser = JSON.parse(localStorage.getItem('fr_user') || '{}');
+            storedUser.emailVerified = data.user.emailVerified;
+            localStorage.setItem('fr_user', JSON.stringify(storedUser));
+          }
           showSuccess('Email verified successfully! You can now close this page and continue using FinRead.');
           // Redirect to home after 3 seconds
           setTimeout(() => {

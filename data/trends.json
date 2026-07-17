@@ -86,5 +86,38 @@
     "changePct": 26.225895316804422,
     "trendStatus": "declining",
     "calculatedAt": "2026-06-30T03:32:28.870Z"
+  },
+  {
+    "ticker": "AAPL",
+    "metric": "roic",
+    "periodType": "annual",
+    "currentValue": "37.05",
+    "previousValue": "37.05",
+    "changeAmount": 0,
+    "changePct": 0,
+    "trendStatus": "stable",
+    "calculatedAt": "2026-07-11T16:49:20.388Z"
+  },
+  {
+    "ticker": "AAPL",
+    "metric": "fcfYield",
+    "periodType": "annual",
+    "currentValue": "27.51",
+    "previousValue": "27.51",
+    "changeAmount": 0,
+    "changePct": 0,
+    "trendStatus": "stable",
+    "calculatedAt": "2026-07-11T16:49:20.388Z"
+  },
+  {
+    "ticker": "AAPL",
+    "metric": "capexIntensity",
+    "periodType": "annual",
+    "currentValue": "3.05",
+    "previousValue": "3.05",
+    "changeAmount": 0,
+    "changePct": 0,
+    "trendStatus": "stable",
+    "calculatedAt": "2026-07-11T16:49:20.388Z"
   }
 ]
