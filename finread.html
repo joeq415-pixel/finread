@@ -2713,6 +2713,27 @@
   </div>
 </div>
 
+<!-- ── CONTACT US MODAL ── -->
+<div class="modal-overlay" id="contact-modal" onclick="if(event.target===this)closeContactModal()">
+  <div class="modal" style="max-width:450px;">
+    <div class="modal-header">
+      <span class="modal-title">Contact Us</span>
+      <button class="modal-close" onclick="closeContactModal()" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--muted); font-size:0.9rem; margin:0 0 20px;">We'd love to hear from you. Send us a message and we'll get back to you soon.</p>
+      <input type="text" id="contact-name" placeholder="Your name" style="width:100%; padding:12px; background:var(--glass); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:0.9rem; margin-bottom:12px;" />
+      <input type="email" id="contact-email" placeholder="your@email.com" style="width:100%; padding:12px; background:var(--glass); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:0.9rem; margin-bottom:12px;" />
+      <textarea id="contact-message" placeholder="Your message..." style="width:100%; padding:12px; background:var(--glass); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:0.9rem; margin-bottom:12px; resize:vertical; min-height:120px; font-family:inherit;"></textarea>
+      <div id="contact-error" style="color:var(--danger); font-size:0.85rem; margin-bottom:12px; display:none;"></div>
+      <div id="contact-success" style="color:var(--accent); font-size:0.85rem; margin-bottom:12px; display:none;"></div>
+      <button class="btn btn-primary" style="width:100%; justify-content:center; padding:12px;" onclick="submitContact()" id="contact-submit">Send Message</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── FOOTER CTA ── -->
 <section style="padding: 60px 24px; text-align: center; border-top: 1px solid var(--border);">
   <div class="container" style="max-width: 600px; margin: 0 auto;">
@@ -2737,7 +2758,7 @@
       </div>
       <div>
         <p style="font-weight: 600; font-size: 0.9rem; color: var(--text); margin: 0 0 12px; text-transform: uppercase; letter-spacing: 0.05em;">Support</p>
-        <p style="margin: 8px 0; font-size: 0.85rem;"><a href="/contact" style="color: var(--muted); text-decoration: none; transition: color 0.2s; cursor:pointer;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">Contact Us</a></p>
+        <p style="margin: 8px 0; font-size: 0.85rem;"><a onclick="openContactModal()" style="color: var(--muted); text-decoration: none; transition: color 0.2s; cursor:pointer;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">Contact Us</a></p>
       </div>
     </div>
     <div style="border-top: 1px solid var(--border); padding-top: 24px; text-align: center;">
@@ -5224,6 +5245,76 @@ async function submitForgotPassword() {
   } finally {
     btn.disabled = false;
     btn.textContent = 'Send Reset Link';
+  }
+}
+
+function openContactModal() {
+  document.getElementById('contact-modal').classList.add('open');
+  document.getElementById('contact-name').focus();
+}
+
+function closeContactModal() {
+  document.getElementById('contact-modal').classList.remove('open');
+  document.getElementById('contact-name').value = '';
+  document.getElementById('contact-email').value = '';
+  document.getElementById('contact-message').value = '';
+  document.getElementById('contact-error').style.display = 'none';
+  document.getElementById('contact-success').style.display = 'none';
+}
+
+async function submitContact() {
+  const name = document.getElementById('contact-name').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  const message = document.getElementById('contact-message').value.trim();
+  const errorEl = document.getElementById('contact-error');
+  const successEl = document.getElementById('contact-success');
+  const btn = document.getElementById('contact-submit');
+
+  if (!name) {
+    errorEl.textContent = 'Please enter your name';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  if (!email || !email.includes('@')) {
+    errorEl.textContent = 'Please enter a valid email address';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  if (!message) {
+    errorEl.textContent = 'Please enter a message';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    errorEl.style.display = 'none';
+    successEl.style.display = 'none';
+
+    const res = await fetch(`${API}/api/contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, message })
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || 'Failed to send message');
+    }
+
+    successEl.textContent = 'Message sent! We\'ll get back to you soon.';
+    successEl.style.display = 'block';
+    showToast('Message sent successfully', 'success');
+    setTimeout(() => closeContactModal(), 2000);
+  } catch (err) {
+    errorEl.textContent = err.message;
+    errorEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send Message';
   }
 }
 
