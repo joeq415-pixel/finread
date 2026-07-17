@@ -1201,7 +1201,7 @@
           <input type="checkbox" id="remember-me" style="width:18px; height:18px; cursor:pointer; accent-color:var(--accent);" />
           <label for="remember-me" style="font-size:0.875rem; color:var(--muted); cursor:pointer; margin:0;">Remember me</label>
         </div>
-        <a href="/forgot-password" style="font-size:0.875rem; color:var(--accent); text-decoration:none; cursor:pointer;">Forgot password?</a>
+        <a onclick="openForgotPasswordModal()" style="font-size:0.875rem; color:var(--accent); text-decoration:none; cursor:pointer;">Forgot password?</a>
       </div>
       <button class="btn btn-primary" style="width:100%; justify-content:center; padding:14px; font-size:0.95rem; font-weight:600; margin-top:8px;" id="auth-submit-btn" onclick="submitAuth()">
         Sign In
@@ -2691,6 +2691,24 @@
       </div>
 
       <p style="margin:24px 0 0; color:var(--muted); font-size:0.75rem; text-align:center;">Last updated: June 2024</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── FORGOT PASSWORD MODAL ── -->
+<div class="modal-overlay" id="forgot-password-modal" onclick="if(event.target===this)closeForgotPasswordModal()">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header">
+      <span class="modal-title">Reset Password</span>
+      <button class="modal-close" onclick="closeForgotPasswordModal()" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--muted); font-size:0.9rem; margin:0 0 20px;">Enter your email address and we'll send you a link to reset your password.</p>
+      <input type="email" id="forgot-password-email" placeholder="your@email.com" style="width:100%; padding:12px; background:var(--glass); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:0.9rem; margin-bottom:16px;" />
+      <div id="forgot-password-error" style="color:var(--danger); font-size:0.85rem; margin-bottom:12px; display:none;"></div>
+      <button class="btn btn-primary" style="width:100%; justify-content:center; padding:12px;" onclick="submitForgotPassword()" id="forgot-password-submit">Send Reset Link</button>
     </div>
   </div>
 </div>
@@ -5152,6 +5170,61 @@ function openTermsModal() {
 
 function closeTermsModal() {
   document.getElementById('terms-modal').classList.remove('open');
+}
+
+function openForgotPasswordModal() {
+  document.getElementById('forgot-password-modal').classList.add('open');
+  document.getElementById('forgot-password-email').focus();
+}
+
+function closeForgotPasswordModal() {
+  document.getElementById('forgot-password-modal').classList.remove('open');
+  document.getElementById('forgot-password-email').value = '';
+  document.getElementById('forgot-password-error').style.display = 'none';
+}
+
+async function submitForgotPassword() {
+  const email = document.getElementById('forgot-password-email').value.trim();
+  const errorEl = document.getElementById('forgot-password-error');
+  const btn = document.getElementById('forgot-password-submit');
+
+  if (!email) {
+    errorEl.textContent = 'Please enter your email address';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  if (!email.includes('@')) {
+    errorEl.textContent = 'Please enter a valid email address';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    const res = await fetch(`${API}/api/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || 'Failed to send reset link');
+    }
+
+    errorEl.style.display = 'none';
+    showToast('Password reset link sent to your email', 'success');
+    closeForgotPasswordModal();
+  } catch (err) {
+    errorEl.textContent = err.message;
+    errorEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send Reset Link';
+  }
 }
 
 async function showHealthScore() {
