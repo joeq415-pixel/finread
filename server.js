@@ -2639,22 +2639,27 @@ app.post('/api/analyze/edgar', authMiddleware, async (req, res) => {
     const allKeys = Object.keys(getSections(formType, itemKeys));
     const onlyKeys = access.preview ? [allKeys[0]] : undefined;
 
-    // Fetch XBRL metrics FIRST so they can be included in Key Takeaways
+    // Fetch XBRL in parallel with AI analysis for 10-K, 10-Q, and 20-F
     const xbrlSupportedForms = ['10-K', '10-Q', '20-F'];
     const shouldFetchXBRL = xbrlSupportedForms.includes(formType) && cik && accessionNumber;
-
-    let xbrlMetrics = null;
-    if (shouldFetchXBRL) {
-      const t_xbrl = Date.now();
-      xbrlMetrics = await fetchXBRLMetricsAsync(cik, accessionNumber, formType);
-      console.log(`[analyze] XBRL fetch completed in ${Date.now() - t_xbrl}ms`);
-    }
 
     sendEvent('loading', { status: 'analyzing_sections', progress: 40 });
 
     let t2 = Date.now();
-    const { sections, sectionLabels, takeaways } = await runFullAnalysis(text, companyName, formType, itemKeys, onlyKeys, toc, xbrlMetrics);
-    console.log(`[analyze] AI analysis completed in ${Date.now() - t2}ms`);
+    const [{ sections, sectionLabels, takeaways }, xbrlMetrics] = await Promise.all([
+      runFullAnalysis(text, companyName, formType, itemKeys, onlyKeys, toc, null),
+      shouldFetchXBRL ? fetchXBRLMetricsAsync(cik, accessionNumber, formType) : Promise.resolve(null)
+    ]);
+
+    // If metrics were fetched after analysis, regenerate takeaways with metrics
+    let finalTakeaways = takeaways;
+    if (xbrlMetrics && takeaways.some(t => t.includes('actual numbers') || t.includes('complete financial picture'))) {
+      console.log(`[analyze] Regenerating takeaways with XBRL metrics`);
+      const takeawaysWithMetrics = await generateTakeaways(text, companyName, formType, xbrlMetrics);
+      finalTakeaways = takeawaysWithMetrics.takeaways;
+    }
+
+    console.log(`[analyze] AI analysis + XBRL fetch completed in ${Date.now() - t2}ms`);
 
     sendEvent('loading', { status: 'processing_metrics', progress: 80 });
 
@@ -2671,10 +2676,10 @@ app.post('/api/analyze/edgar', authMiddleware, async (req, res) => {
     // to preview but a clear incentive to upgrade for the rest. The single
     // preview section for a fully-locked filing type is left untouched —
     // it's meant to look like a complete, convincing sample on its own.
-    let responseTakeaways = takeaways;
-    const takeawaysTotal = takeaways.length;
+    let responseTakeaways = finalTakeaways;
+    const takeawaysTotal = finalTakeaways.length;
     if (!isPro) {
-      responseTakeaways = takeaways.slice(0, Math.max(2, Math.ceil(takeaways.length / 2)));
+      responseTakeaways = finalTakeaways.slice(0, Math.max(2, Math.ceil(finalTakeaways.length / 2)));
     }
 
     let responseSections = sections;
