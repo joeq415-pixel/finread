@@ -4554,17 +4554,28 @@ async function showMetrics() {
     if (formType === '10-Q') {
       quarterlyWarning = `
         <div style="background:rgba(59, 130, 246, 0.1); border:1px solid rgba(59, 130, 246, 0.3); border-radius:8px; padding:12px; margin-bottom:16px; font-size:0.85rem; color:var(--text);">
-          <strong style="color:#3b82f6;">ℹ️ Quarterly Data:</strong> Income statement metrics (revenue, net income) are for <strong>this quarter only</strong>, not annualized. Balance sheet metrics are as of quarter-end. Profitability ratios may appear distorted when comparing quarterly income to annual-basis balance sheet values. For complete analysis, review <strong>trailing-twelve-month (TTM)</strong> or <strong>10-K annual</strong> data.
+          <strong style="color:#3b82f6;">ℹ️ Quarterly Data:</strong> Income statement metrics (revenue, net income) are for <strong>this quarter only</strong>, not annualized. Balance sheet metrics are as of quarter-end. Profitability ratios may appear distorted when comparing quarterly income to point-in-time balance sheet values. For complete analysis, review <strong>trailing-twelve-month (TTM)</strong> or <strong>10-K annual</strong> data.
         </div>
       `;
     }
 
-    // If revenue failed to extract, show additional warning about missing data
+    // If revenue failed to extract, show additional warning about missing data (applies to all filing types)
     let missingRevenueWarning = '';
-    if (!extractedMetrics.revenue && (formType === '10-Q' || formType === '10-K')) {
+    if (!extractedMetrics.revenue) {
       missingRevenueWarning = `
         <div style="background:rgba(239, 68, 68, 0.1); border:1px solid rgba(239, 68, 68, 0.3); border-radius:8px; padding:12px; margin-bottom:16px; font-size:0.85rem; color:var(--text);">
-          <strong style="color:#ef4444;">⚠️ Missing Revenue Data:</strong> Revenue could not be extracted from this filing. Profitability ratios that depend on revenue (profit margin, ROE) may be unreliable or skipped. Check the filing directly for accurate revenue figures.
+          <strong style="color:#ef4444;">⚠️ Missing Revenue Data:</strong> Revenue could not be extracted from this ${formType} filing. Profitability ratios that depend on revenue (profit margin, etc.) may be unreliable or skipped. Check the filing directly for accurate revenue figures.
+        </div>
+      `;
+    }
+
+    // If profitability ratios seem unrealistic (ROE > 500%), warn about data mismatch
+    let unrealisticRatiosWarning = '';
+    if (calculatedRatios && calculatedRatios.roe === undefined && extractedMetrics.netIncome && extractedMetrics.equity &&
+        (extractedMetrics.netIncome / extractedMetrics.equity > 5)) {
+      unrealisticRatiosWarning = `
+        <div style="background:rgba(239, 68, 68, 0.1); border:1px solid rgba(239, 68, 68, 0.3); border-radius:8px; padding:12px; margin-bottom:16px; font-size:0.85rem; color:var(--text);">
+          <strong style="color:#ef4444;">⚠️ Data Quality Issue:</strong> Profitability ratios appear unrealistic, suggesting a mismatch in data periods or scales (e.g., quarterly income vs annual balance sheet). ROE is not displayed. For accurate analysis, verify the data directly in the filing.
         </div>
       `;
     }
@@ -4641,6 +4652,7 @@ async function showMetrics() {
       ${eightKWarning}
       ${quarterlyWarning}
       ${missingRevenueWarning}
+      ${unrealisticRatiosWarning}
       <!-- Tab Navigation -->
       <div class="section-tabs" style="margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:0;">
         <button class="tab metrics-tab active" data-tab="metrics-profitability" onclick="switchMetricsTab('metrics-profitability')">Profitability</button>

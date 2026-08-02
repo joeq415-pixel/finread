@@ -5351,15 +5351,17 @@ function calculateCashRunwayAndFlags(metrics) {
 function calculateRatios(metrics, formType) {
   const ratios = {};
 
-  // For 10-Q filings, only calculate ratios that make sense with quarterly data
-  // Skip ROE if equity is suspiciously small (< $0.2B) compared to net income, indicating data mismatch
-  const isQuarterly = formType === '10-Q';
-  const hasDataMismatch = isQuarterly && metrics.netIncome && metrics.equity &&
-    (metrics.netIncome / metrics.equity > 5); // ROE over 500% is unrealistic
+  // Detect data mismatches regardless of filing type
+  // Skip ROE if the ratio is unrealistically high (>500%), indicating period/scale mismatch
+  // This can happen with:
+  // - 10-Q: quarterly net income vs point-in-time equity
+  // - Any filing: extracted data at wrong scale or mixed time periods
+  const hasUnrealisticROE = metrics.netIncome && metrics.equity &&
+    (metrics.netIncome / metrics.equity > 5); // ROE over 500% is unrealistic for any company
 
   // Profitability Ratios
-  // Skip ROE for 10-Q if data seems mismatched (quarterly income vs different equity context)
-  if (metrics.netIncome && metrics.equity && !hasDataMismatch) {
+  // Skip ROE if data seems mismatched (would indicate quarterly vs annual period mismatch)
+  if (metrics.netIncome && metrics.equity && !hasUnrealisticROE) {
     ratios.roe = (metrics.netIncome / metrics.equity * 100).toFixed(2); // Return on Equity
   }
   if (metrics.netIncome && metrics.revenue) {
@@ -5752,13 +5754,14 @@ app.post('/api/metrics', authMiddleware, async (req, res) => {
       console.log('[/api/metrics] First section sample:', sections[Object.keys(sections)[0]]);
     }
 
-    // For 10-Q filings, note that income statement metrics are quarterly
-    // and balance sheet metrics are point-in-time (as of quarter end)
+    // Note the periodicity of metrics for proper interpretation
     let metricsWarning = '';
     if (formType === '10-Q') {
-      metricsWarning = 'Income statement metrics (revenue, net income) are for the quarter only, not annualized. Balance sheet metrics are as of quarter-end.';
-    } else if (formType === '10-K') {
+      metricsWarning = 'Income statement metrics (revenue, net income, cash flows) are for the quarter only, not annualized. Balance sheet metrics are as of quarter-end. This can cause profitability ratios to appear distorted.';
+    } else if (formType === '10-K' || formType === '20-F') {
       metricsWarning = 'All metrics are for the full fiscal year.';
+    } else if (formType === 'DEF 14A' || formType === '8-K' || formType === '13-F') {
+      metricsWarning = 'This filing type contains limited or no comprehensive financial statements.';
     }
 
     // Try to fetch and use XBRL data for accuracy (10-K, 10-Q, 20-F)
