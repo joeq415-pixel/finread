@@ -2784,12 +2784,19 @@ app.post('/api/analyze/edgar', authMiddleware, async (req, res) => {
     // Always regenerate takeaways with metrics if available (more reliable than detection)
     let finalTakeaways = takeaways;
     console.log(`[analyze] XBRL Metrics received:`, xbrlMetrics);
+    console.log(`[analyze] Section Metrics extracted:`, sectionMetrics);
     const metricsToUse = xbrlMetrics || sectionMetrics;
     if (metricsToUse) {
       const hasMetrics = Object.values(metricsToUse).some(v => v !== null);
-      console.log(`[analyze] Has metrics: ${hasMetrics}`, { revenue: metricsToUse.revenue, netIncome: metricsToUse.netIncome });
+      console.log(`[analyze] Has metrics: ${hasMetrics}`, {
+        revenue: metricsToUse.revenue,
+        netIncome: metricsToUse.netIncome,
+        operatingCashFlow: metricsToUse.operatingCashFlow,
+        totalAssets: metricsToUse.totalAssets
+      });
       if (hasMetrics) {
         console.log(`[analyze] Regenerating takeaways with metrics (source: ${xbrlMetrics ? 'XBRL' : 'sections'})`);
+        console.log(`[analyze] Full metrics object:`, metricsToUse);
         const takeawaysWithMetrics = await generateTakeaways(text, companyName, formType, metricsToUse);
         finalTakeaways = takeawaysWithMetrics.takeaways;
         console.log(`[analyze] Takeaways regenerated with metrics:`, finalTakeaways);
