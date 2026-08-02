@@ -777,7 +777,7 @@ app.post('/api/contact', async (req, res) => {
 
 // ── EDGAR ─────────────────────────────────────────────────────────────────────
 
-const EDGAR_UA = { 'User-Agent': 'FinRead/1.0 (Educational Application; contact@finread.example.com)' };
+const EDGAR_UA = { 'User-Agent': 'Mozilla/5.0 (FinRead/1.0; Educational Research Tool; contact@finread.example.com)' };
 
 async function getCompanyCIK(ticker) {
   const res = await fetch('https://www.sec.gov/files/company_tickers.json', { headers: EDGAR_UA });
