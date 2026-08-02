@@ -2556,13 +2556,21 @@ ACTUAL FINANCIAL METRICS EXTRACTED FROM THIS ${formType.toUpperCase()}:
 - Equity: ${formatNumber(metrics.equity)}
 `;
 
+    // Check if there are losses or negative metrics
+    const hasLoss = metrics.netIncome && metrics.netIncome < 0;
+    const hasNegativeOperatingIncome = metrics.operatingIncome && metrics.operatingIncome < 0;
+
     metricsInstructions = `
 🔴 CRITICAL INSTRUCTIONS - DO NOT IGNORE:
 1. EVERY takeaway MUST include at least one of these numbers from above
 2. Use exact numbers like "${formatNumber(metrics.revenue)}" revenue or "${formatNumber(metrics.netIncome)}" net income/loss
 3. Write naturally but always include the specific dollar amount
 4. Example: "The company earned ${formatNumber(metrics.revenue)} in revenue this period" or "The company reported a ${formatNumber(metrics.netIncome)} loss"
-5. Reference these metrics in AT LEAST 3 of your 6 takeaways`;
+5. Reference these metrics in AT LEAST 3 of your 6 takeaways
+${hasLoss ? `6. ⚠️ CRITICAL: The company has a NET LOSS of ${formatNumber(metrics.netIncome)} - YOU MUST highlight this in at least one takeaway` : ''}
+${hasNegativeOperatingIncome ? `7. ⚠️ CRITICAL: Operating income is negative ${formatNumber(metrics.operatingIncome)} - include this concern in the takeaways` : ''}
+8. Include BOTH positive AND negative/concerning information for transparency and accuracy
+9. At least 1-2 takeaways MUST address challenges, losses, or financial concerns`;
   } else {
     console.log(`[generateTakeaways] No metrics available or all metrics are null`);
   }
