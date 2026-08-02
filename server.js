@@ -1144,7 +1144,7 @@ function extractAllXBRLMetrics(xbrlXml) {
   const contexts = [currentContext, 'Current_FiscalYearDuration', 'FY2024', 'Duration'];
 
   // Income statement metrics
-  metrics.revenue = extractMetric(['Revenues', 'RevenuefromContractwithCustomers', 'Revenues_Parent'], contexts);
+  metrics.revenue = extractMetric(['Revenues', 'RevenuefromContractwithCustomers', 'RevenueFromContractWithCustomerExcludingAssessedTax', 'Revenues_Parent'], contexts);
   metrics.netIncome = extractMetric(['NetIncomeLoss', 'ProfitLoss', 'NetIncome', 'NetIncomeAttributableToParent'], contexts);
   metrics.operatingIncome = extractMetric(['OperatingIncomeLoss', 'OperatingIncome', 'OperatingIncomeFromSpecialReports'], contexts);
   metrics.grossProfit = extractMetric(['GrossProfit', 'GrossProfitLoss'], contexts);
