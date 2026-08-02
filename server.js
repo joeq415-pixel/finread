@@ -2487,7 +2487,18 @@ Rules — follow all of these:
   return parsed;
 }
 
-async function generateTakeaways(text, companyName, formType) {
+async function generateTakeaways(text, companyName, formType, metrics = null) {
+  const metricsContext = metrics ? `
+FINANCIAL METRICS FROM THIS REPORT:
+- Revenue: ${metrics.revenue ? `$${(metrics.revenue).toFixed(2)}B` : 'N/A'}
+- Net Income: ${metrics.netIncome ? `$${(metrics.netIncome).toFixed(2)}B` : 'N/A'}
+- Operating Income: ${metrics.operatingIncome ? `$${(metrics.operatingIncome).toFixed(2)}B` : 'N/A'}
+- Operating Cash Flow: ${metrics.operatingCashFlow ? `$${(metrics.operatingCashFlow).toFixed(2)}B` : 'N/A'}
+- Free Cash Flow: ${metrics.freeCashFlow ? `$${(metrics.freeCashFlow).toFixed(2)}B` : 'N/A'}
+- Total Assets: ${metrics.totalAssets ? `$${(metrics.totalAssets).toFixed(2)}B` : 'N/A'}
+- Equity: ${metrics.equity ? `$${(metrics.equity).toFixed(2)}B` : 'N/A'}
+` : '';
+
   const makeRequest = () => anthropic.messages.create({
     model: 'claude-sonnet-4-6',
     max_tokens: 800,
@@ -2496,6 +2507,8 @@ async function generateTakeaways(text, companyName, formType) {
       content: `You are explaining a financial report to someone who isn't a financial expert. Make it simple and easy to understand.
 
 Based on this ${formType} from ${companyName}, provide exactly 6 simple, clear takeaways. What should someone know about this company after reading its financial report?
+
+${metricsContext}
 
 Text:
 ---
@@ -2530,7 +2543,7 @@ Rules for each takeaway:
 // Claude (used for the locked-filing-type preview, which only analyzes one
 // section to keep cost low) — but sectionLabels is always built from the FULL
 // section set, so the tab bar can still show every tab name, locked or not.
-async function runFullAnalysis(text, companyName, formType, itemKeys, onlyKeys, toc) {
+async function runFullAnalysis(text, companyName, formType, itemKeys, onlyKeys, toc, metrics = null) {
   const sections = getSections(formType, itemKeys);
   const keysToAnalyze = onlyKeys || Object.keys(sections);
   const sectionTexts = {};
@@ -2546,7 +2559,7 @@ async function runFullAnalysis(text, companyName, formType, itemKeys, onlyKeys, 
           .catch(err => [key, { key_quote: '', key_figures: [], bullets: [`Analysis error: ${err.message}`], confidence: 'low', confidence_note: 'Analysis failed for this section' }])
       )
     ),
-    generateTakeaways(text, companyName, formType),
+    generateTakeaways(text, companyName, formType, metrics),
   ]);
 
   return {
@@ -2626,18 +2639,22 @@ app.post('/api/analyze/edgar', authMiddleware, async (req, res) => {
     const allKeys = Object.keys(getSections(formType, itemKeys));
     const onlyKeys = access.preview ? [allKeys[0]] : undefined;
 
-    // Fetch XBRL in parallel with AI analysis for 10-K, 10-Q, and 20-F
+    // Fetch XBRL metrics FIRST so they can be included in Key Takeaways
     const xbrlSupportedForms = ['10-K', '10-Q', '20-F'];
     const shouldFetchXBRL = xbrlSupportedForms.includes(formType) && cik && accessionNumber;
+
+    let xbrlMetrics = null;
+    if (shouldFetchXBRL) {
+      const t_xbrl = Date.now();
+      xbrlMetrics = await fetchXBRLMetricsAsync(cik, accessionNumber, formType);
+      console.log(`[analyze] XBRL fetch completed in ${Date.now() - t_xbrl}ms`);
+    }
 
     sendEvent('loading', { status: 'analyzing_sections', progress: 40 });
 
     let t2 = Date.now();
-    const [{ sections, sectionLabels, takeaways }, xbrlMetrics] = await Promise.all([
-      runFullAnalysis(text, companyName, formType, itemKeys, onlyKeys, toc),
-      shouldFetchXBRL ? fetchXBRLMetricsAsync(cik, accessionNumber, formType) : Promise.resolve(null)
-    ]);
-    console.log(`[analyze] AI analysis + XBRL fetch completed in ${Date.now() - t2}ms`);
+    const { sections, sectionLabels, takeaways } = await runFullAnalysis(text, companyName, formType, itemKeys, onlyKeys, toc, xbrlMetrics);
+    console.log(`[analyze] AI analysis completed in ${Date.now() - t2}ms`);
 
     sendEvent('loading', { status: 'processing_metrics', progress: 80 });
 
