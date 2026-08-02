@@ -2741,16 +2741,35 @@ app.post('/api/analyze/edgar', authMiddleware, async (req, res) => {
     let sectionMetrics = null;
     if (sections) {
       sectionMetrics = {};
-      // Extract numbers from key_figures in sections
+
+      // Helper to find the right figure by label matching
+      const findFigureByLabel = (figures, labelPatterns) => {
+        if (!figures || !Array.isArray(figures)) return null;
+        for (const fig of figures) {
+          if (fig.label) {
+            for (const pattern of labelPatterns) {
+              if (pattern.test(fig.label)) {
+                return fig.value;
+              }
+            }
+          }
+        }
+        // Fallback: return last figure if no match (usually the total)
+        return figures[figures.length - 1]?.value;
+      };
+
+      // Revenue - look for "Revenue" or "Total Revenue" (usually the last/total one)
       if (sections.revenue && sections.revenue.key_figures) {
-        const revenueStr = sections.revenue.key_figures[0]?.value;
+        const revenueStr = findFigureByLabel(sections.revenue.key_figures, [/revenue/i, /total/i]);
         if (revenueStr) {
           const match = revenueStr.match(/[\d.]+/);
           if (match) sectionMetrics.revenue = parseFloat(match[0]);
         }
       }
+
+      // Net Income - look for "Net Income" or "Net Loss"
       if (sections.income && sections.income.key_figures) {
-        const netIncomeStr = sections.income.key_figures[0]?.value;
+        const netIncomeStr = findFigureByLabel(sections.income.key_figures, /net\s+(income|loss|profit)/i);
         console.log(`[analyze] Income value string:`, netIncomeStr);
         if (netIncomeStr) {
           // Handle both negative formats: -$X or ($X)
@@ -2764,20 +2783,25 @@ app.post('/api/analyze/edgar', authMiddleware, async (req, res) => {
           }
         }
       }
+
+      // Operating Cash Flow
       if (sections.cashflow && sections.cashflow.key_figures) {
-        const ocfStr = sections.cashflow.key_figures[0]?.value;
+        const ocfStr = findFigureByLabel(sections.cashflow.key_figures, [/operating/i, /operations/i]);
         if (ocfStr) {
           const match = ocfStr.match(/[\d.]+/);
           if (match) sectionMetrics.operatingCashFlow = parseFloat(match[0]);
         }
       }
+
+      // Total Assets
       if (sections.balance && sections.balance.key_figures) {
-        const assetsStr = sections.balance.key_figures[0]?.value;
+        const assetsStr = findFigureByLabel(sections.balance.key_figures, /total.*asset/i);
         if (assetsStr) {
           const match = assetsStr.match(/[\d.]+/);
           if (match) sectionMetrics.totalAssets = parseFloat(match[0]);
         }
       }
+
       console.log(`[analyze] Extracted section metrics:`, sectionMetrics);
     }
 
