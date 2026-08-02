@@ -926,7 +926,7 @@ async function fetchBalanceSheetFromXBRL(cik, accessionNumber) {
 // Wrapper for parallel XBRL fetching during analysis
 async function fetchXBRLMetricsAsync(cik, accessionNumber, formType) {
   try {
-    const metrics = await fetchAllXBRLMetrics(cik, accessionNumber);
+    const metrics = await fetchAllXBRLMetrics(cik, accessionNumber, formType);
     if (metrics) {
       console.log(`[fetchXBRLMetricsAsync] Successfully fetched XBRL metrics for ${formType}`);
     }
@@ -938,7 +938,7 @@ async function fetchXBRLMetricsAsync(cik, accessionNumber, formType) {
 }
 
 // Fetch all XBRL metrics (profitability, efficiency, balance sheet) from SEC EDGAR
-async function fetchAllXBRLMetrics(cik, accessionNumber) {
+async function fetchAllXBRLMetrics(cik, accessionNumber, formType = '10-K') {
   try {
     const numericCik = cik.replace(/^0+/, '');
     const cleanAcc = accessionNumber.replace(/-/g, '');
@@ -986,7 +986,7 @@ async function fetchAllXBRLMetrics(cik, accessionNumber) {
     const xbrlXml = await xbrlRes.text();
 
     // Extract all metrics (profitability, efficiency, balance sheet) using flexible regex patterns
-    const metrics = extractAllXBRLMetrics(xbrlXml);
+    const metrics = extractAllXBRLMetrics(xbrlXml, formType);
 
     if (!metrics || Object.values(metrics).every(v => v === null)) {
       console.log('[fetchAllXBRLMetrics] XBRL file found but no metrics extracted. Will use HTML extraction instead.');
@@ -1098,7 +1098,7 @@ function updateSectionsWithXBRLData(sections, xbrlMetrics) {
 }
 
 // Extract all key financial metrics from XBRL for use in Key Figures
-function extractAllXBRLMetrics(xbrlXml) {
+function extractAllXBRLMetrics(xbrlXml, formType = '10-K') {
   const metrics = {};
 
   const extractMetric = (tagNames, contexts) => {
@@ -1196,13 +1196,25 @@ function extractAllXBRLMetrics(xbrlXml) {
 
   // Sanitize metrics: reject obviously wrong values
   // This catches extraction errors like accidentally using year as value
+  // Filing-type aware: quarterly filings have tighter constraints than annual filings
+  const isQuarterly = formType === '10-Q';
   const sanitize = (value, fieldName) => {
     if (!value || value === 0) return value;
     const absValue = Math.abs(value);
 
-    // Too high: most metrics > $5 trillion is unrealistic
-    if (absValue > 5) {
-      console.warn(`[extractAllXBRLMetrics] ⚠️ Rejecting unrealistic value for ${fieldName}: ${value}B (exceeds $5T threshold)`);
+    // Too high: stricter for quarterly filings
+    // For revenue specifically: quarterly max ~$200B (highest is Apple at ~$100B), annual max ~$2T
+    let maxThreshold = 5;  // Default $5T
+    if (isQuarterly && fieldName === 'revenue') {
+      maxThreshold = 0.2;  // $200B max for quarterly revenue
+    } else if (isQuarterly) {
+      maxThreshold = 1;    // $1T max for other quarterly metrics
+    } else if (fieldName === 'revenue' || fieldName === 'totalAssets') {
+      maxThreshold = 2;    // $2T max for annual revenue/assets
+    }
+
+    if (absValue > maxThreshold) {
+      console.warn(`[extractAllXBRLMetrics] ⚠️ Rejecting unrealistic value for ${fieldName}: ${value}B (exceeds $${maxThreshold}T threshold for ${formType})`);
       return null;
     }
 
@@ -1282,7 +1294,7 @@ async function preExtractXBRLData(cik, accessionNumber, ticker, formType) {
     }
 
     // Fetch and extract XBRL metrics
-    const metrics = await fetchAllXBRLMetrics(cik, accessionNumber);
+    const metrics = await fetchAllXBRLMetrics(cik, accessionNumber, formType);
 
     if (!metrics || Object.values(metrics).every(v => v === null)) {
       console.warn(`[preExtractXBRL] No metrics extracted for ${ticker}`);
@@ -4019,7 +4031,7 @@ async function processBatchJob(batchId, userId) {
         const analysis = await runFullAnalysis(filing.cik, filing.accessionNumber, filing.formType);
 
         // Extract metrics
-        const metrics = await extractAllXBRLMetrics(filing.cik, filing.accessionNumber);
+        const metrics = await fetchAllXBRLMetrics(filing.cik, filing.accessionNumber, filing.formType);
         const sectionMetrics = await extractMetricsFromSections(analysis.sections);
         const mergedMetrics = { ...metrics, ...sectionMetrics };
 
@@ -5686,7 +5698,7 @@ async function fetchPriorYearMetrics(cik, accessionNumber, formType) {
       for (const filingNum of filingNumbersToTry) {
         const candidateAcc = `${cikPart}-${yearStr}-${filingNum}`;
         try {
-          const metrics = await fetchAllXBRLMetrics(cik, candidateAcc);
+          const metrics = await fetchAllXBRLMetrics(cik, candidateAcc, formType);
           if (metrics && (metrics.revenue || metrics.netIncome)) {
             console.log(`[fetchPriorYearMetrics] ✓ Found prior year metrics with accession ${candidateAcc}`);
             return metrics;
@@ -5866,7 +5878,7 @@ app.post('/api/metrics', authMiddleware, async (req, res) => {
     let xbrlMetrics = null;
     const xbrlSupportedForms = ['10-K', '10-Q', '20-F'];
     if (xbrlSupportedForms.includes(req.body.formType) && cik && accessionNumber) {
-      xbrlMetrics = await fetchAllXBRLMetrics(cik, accessionNumber);
+      xbrlMetrics = await fetchAllXBRLMetrics(cik, accessionNumber, req.body.formType);
       if (xbrlMetrics) {
         console.log(`[metrics] Using XBRL data for ${req.body.formType}`);
         // Override metrics with XBRL data (more reliable)
