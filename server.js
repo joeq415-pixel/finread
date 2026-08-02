@@ -6512,6 +6512,31 @@ app.get('/api/trends/status', authMiddleware, async (req, res) => {
   }
 });
 
+// ── CACHE MANAGEMENT ──────────────────────────────────────────────────────────
+app.post('/api/cache/clear', authMiddleware, (req, res) => {
+  try {
+    const { ticker, accessionNumber, formType } = req.body;
+
+    if (ticker && accessionNumber && formType) {
+      // Clear specific filing cache
+      const cacheKey = `${ticker.toUpperCase()}:${accessionNumber}:${formType}`;
+      if (analysisCache.has(cacheKey)) {
+        analysisCache.delete(cacheKey);
+        console.log(`[cache] Cleared analysis cache for ${cacheKey}`);
+      }
+      return res.json({ message: `Cache cleared for ${cacheKey}` });
+    }
+
+    // Clear all analysis cache
+    const size = analysisCache.size;
+    analysisCache.clear();
+    console.log(`[cache] Cleared ${size} analysis cache entries`);
+    res.json({ message: `Cleared ${size} analysis cache entries` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ── START ─────────────────────────────────────────────────────────────────────
 
 async function startServer() {
