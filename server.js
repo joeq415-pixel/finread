@@ -2557,10 +2557,12 @@ ACTUAL FINANCIAL METRICS EXTRACTED FROM THIS ${formType.toUpperCase()}:
 `;
 
     metricsInstructions = `
-IMPORTANT: You MUST reference these actual extracted numbers in your takeaways. For example:
-- If revenue is ${formatNumber(metrics.revenue)}, mention this in a takeaway
-- If net income shows ${formatNumber(metrics.netIncome)}, address profitability directly
-- Use these metrics to make specific, fact-based statements about the company's financial health`;
+🔴 CRITICAL INSTRUCTIONS - DO NOT IGNORE:
+1. EVERY takeaway MUST include at least one of these numbers from above
+2. Use exact numbers like "${formatNumber(metrics.revenue)}" revenue or "${formatNumber(metrics.netIncome)}" net income/loss
+3. Write naturally but always include the specific dollar amount
+4. Example: "The company earned ${formatNumber(metrics.revenue)} in revenue this period" or "The company reported a ${formatNumber(metrics.netIncome)} loss"
+5. Reference these metrics in AT LEAST 3 of your 6 takeaways`;
   } else {
     console.log(`[generateTakeaways] No metrics available or all metrics are null`);
   }
