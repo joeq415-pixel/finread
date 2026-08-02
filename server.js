@@ -2751,9 +2751,17 @@ app.post('/api/analyze/edgar', authMiddleware, async (req, res) => {
       }
       if (sections.income && sections.income.key_figures) {
         const netIncomeStr = sections.income.key_figures[0]?.value;
+        console.log(`[analyze] Income value string:`, netIncomeStr);
         if (netIncomeStr) {
-          const match = netIncomeStr.match(/([-\d.]+)/);
-          if (match) sectionMetrics.netIncome = parseFloat(match[1]);
+          // Handle both negative formats: -$X or ($X)
+          let match = netIncomeStr.match(/\([\d.]+\)/); // ($429M) format
+          if (match) {
+            const num = parseFloat(match[0].replace(/[()$MBKT]/g, ''));
+            sectionMetrics.netIncome = -num; // Make it negative
+          } else {
+            match = netIncomeStr.match(/([-\d.]+)/); // -$X format
+            if (match) sectionMetrics.netIncome = parseFloat(match[1]);
+          }
         }
       }
       if (sections.cashflow && sections.cashflow.key_figures) {
