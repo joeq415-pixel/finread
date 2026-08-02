@@ -2548,12 +2548,17 @@ async function generateTakeaways(text, companyName, formType, metrics = null) {
     metricsContext = `
 ACTUAL FINANCIAL METRICS EXTRACTED FROM THIS ${formType.toUpperCase()}:
 - Revenue: ${formatNumber(metrics.revenue)}
-- Net Income: ${formatNumber(metrics.netIncome)} (${metrics.netIncome < 0 ? 'LOSS' : 'PROFIT'})
+- Net Income: ${formatNumber(metrics.netIncome)} ${metrics.netIncome < 0 ? '🔴 LOSS' : '✅ PROFIT'}
 - Operating Income: ${formatNumber(metrics.operatingIncome)}
 - Operating Cash Flow: ${formatNumber(metrics.operatingCashFlow)}
 - Free Cash Flow: ${formatNumber(metrics.freeCashFlow)}
 - Total Assets: ${formatNumber(metrics.totalAssets)}
 - Equity: ${formatNumber(metrics.equity)}
+
+⚠️ IMPORTANT CONTEXT:
+${metrics.netIncome < 0 ? `- The company is LOSING MONEY: ${formatNumber(metrics.netIncome)} net loss` : ''}
+${metrics.operatingIncome < 0 ? `- Operating loss detected: ${formatNumber(metrics.operatingIncome)}` : ''}
+${metrics.freeCashFlow < 0 ? `- Negative free cash flow: ${formatNumber(metrics.freeCashFlow)} - burning cash` : ''}
 `;
 
     metricsInstructions = `
@@ -2562,7 +2567,11 @@ ACTUAL FINANCIAL METRICS EXTRACTED FROM THIS ${formType.toUpperCase()}:
 2. Use exact numbers like "${formatNumber(metrics.revenue)}" revenue or "${formatNumber(metrics.netIncome)}" net income/loss
 3. Write naturally but always include the specific dollar amount
 4. Example: "The company earned ${formatNumber(metrics.revenue)} in revenue this period" or "The company reported a ${formatNumber(metrics.netIncome)} loss"
-5. Reference these metrics in AT LEAST 3 of your 6 takeaways`;
+5. Reference these metrics in AT LEAST 3 of your 6 takeaways
+6. 🔴 CRITICAL: Include BOTH positive AND negative/concerning information for transparency
+7. If there are losses, declining metrics, or financial concerns - YOU MUST highlight them in the takeaways
+8. At least 2 of your 6 takeaways should address challenges, risks, or negative metrics
+9. Be balanced and honest - don't hide bad news`;
   } else {
     console.log(`[generateTakeaways] No metrics available or all metrics are null`);
   }
