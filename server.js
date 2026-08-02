@@ -2492,7 +2492,10 @@ async function generateTakeaways(text, companyName, formType, metrics = null) {
   let metricsContext = '';
   let metricsInstructions = '';
 
+  console.log(`[generateTakeaways] Called with metrics:`, metrics);
+
   if (metrics && Object.values(metrics).some(v => v !== null)) {
+    console.log(`[generateTakeaways] Metrics are present and contain values`);
     const formatNumber = (value) => value ? `$${Math.abs(value).toFixed(2)}B` : 'N/A';
 
     metricsContext = `
@@ -2511,6 +2514,8 @@ IMPORTANT: You MUST reference these actual extracted numbers in your takeaways. 
 - If revenue is ${formatNumber(metrics.revenue)}, mention this in a takeaway
 - If net income shows ${formatNumber(metrics.netIncome)}, address profitability directly
 - Use these metrics to make specific, fact-based statements about the company's financial health`;
+  } else {
+    console.log(`[generateTakeaways] No metrics available or all metrics are null`);
   }
 
   const makeRequest = () => anthropic.messages.create({
@@ -2667,11 +2672,18 @@ app.post('/api/analyze/edgar', authMiddleware, async (req, res) => {
 
     // Always regenerate takeaways with metrics if available (more reliable than detection)
     let finalTakeaways = takeaways;
-    if (xbrlMetrics && Object.values(xbrlMetrics).some(v => v !== null)) {
-      console.log(`[analyze] Regenerating takeaways with XBRL metrics`);
-      const takeawaysWithMetrics = await generateTakeaways(text, companyName, formType, xbrlMetrics);
-      finalTakeaways = takeawaysWithMetrics.takeaways;
-      console.log(`[analyze] Takeaways regenerated with metrics`);
+    console.log(`[analyze] XBRL Metrics received:`, xbrlMetrics);
+    if (xbrlMetrics) {
+      const hasMetrics = Object.values(xbrlMetrics).some(v => v !== null);
+      console.log(`[analyze] Has metrics: ${hasMetrics}`, { revenue: xbrlMetrics.revenue, netIncome: xbrlMetrics.netIncome });
+      if (hasMetrics) {
+        console.log(`[analyze] Regenerating takeaways with XBRL metrics`);
+        const takeawaysWithMetrics = await generateTakeaways(text, companyName, formType, xbrlMetrics);
+        finalTakeaways = takeawaysWithMetrics.takeaways;
+        console.log(`[analyze] Takeaways regenerated with metrics:`, finalTakeaways);
+      }
+    } else {
+      console.log(`[analyze] No XBRL metrics available`);
     }
 
     console.log(`[analyze] AI analysis + XBRL fetch completed in ${Date.now() - t2}ms`);
