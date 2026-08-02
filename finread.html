@@ -4510,18 +4510,21 @@ async function showMetrics() {
 
     const data = await res.json();
     console.log('[showMetrics] Response data:', data);
-    const { extractedMetrics, calculatedRatios, message } = data;
+    const { extractedMetrics, calculatedRatios, message, filingMetadata } = data;
     console.log('[showMetrics] extractedMetrics:', extractedMetrics);
     console.log('[showMetrics] calculatedRatios:', calculatedRatios);
+    console.log('[showMetrics] filingMetadata:', filingMetadata);
 
     // Store metrics data globally for export
-    window.currentMetricsData = { extractedMetrics, calculatedRatios, message };
+    window.currentMetricsData = { extractedMetrics, calculatedRatios, message, filingMetadata };
 
     // Hide loading, show content
     document.getElementById('metrics-loading').style.display = 'none';
 
     const formType = currentAnalysis?.formType || '';
     const isEightK = formType === '8-K';
+    const isQuarterly = formType === '10-Q';
+    const isAnnual = formType === '10-K' || formType === '20-F';
 
     // Check if this filing type doesn't have traditional metrics (10-K/A, 8-K, DEF 14A, 13-F)
     if (message && Object.keys(extractedMetrics || {}).length === 0) {
@@ -4551,10 +4554,10 @@ async function showMetrics() {
 
     // For 10-Q filings, add a note that income statement metrics are quarterly
     let quarterlyWarning = '';
-    if (formType === '10-Q') {
+    if (isQuarterly && filingMetadata) {
       quarterlyWarning = `
         <div style="background:rgba(59, 130, 246, 0.1); border:1px solid rgba(59, 130, 246, 0.3); border-radius:8px; padding:12px; margin-bottom:16px; font-size:0.85rem; color:var(--text);">
-          <strong style="color:#3b82f6;">ℹ️ This is quarterly data (3 months):</strong> The revenue and net income numbers below are for just this quarter, not the whole year. To see the full year picture, look at the 10-K annual report instead.
+          <strong style="color:#3b82f6;">ℹ️ ${filingMetadata.periodicity === 'quarterly' ? 'This is quarterly data (3 months):' : ''}</strong> ${filingMetadata.dataNote}
         </div>
       `;
     }
@@ -4669,7 +4672,7 @@ async function showMetrics() {
           ${extractedMetrics.revenue ? `
             <div>
               <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                <span style="font-size:0.9rem; color:var(--text);">Revenue</span>
+                <span style="font-size:0.9rem; color:var(--text);">Revenue${isQuarterly ? ' (Quarterly)' : ''}</span>
                 <span style="font-size:0.9rem; font-weight:600; color:var(--accent);">$${extractedMetrics.revenue.toFixed(1)}B</span>
               </div>
               <div style="height:6px; background:var(--glass); border-radius:3px; overflow:hidden;">
@@ -4680,7 +4683,7 @@ async function showMetrics() {
           ${extractedMetrics.grossProfit ? `
             <div>
               <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                <span style="font-size:0.9rem; color:var(--text);">Gross Profit</span>
+                <span style="font-size:0.9rem; color:var(--text);">Gross Profit${isQuarterly ? ' (Quarterly)' : ''}</span>
                 <span style="font-size:0.9rem; font-weight:600; color:#22c55e;">$${extractedMetrics.grossProfit.toFixed(1)}B</span>
               </div>
               <div style="height:6px; background:var(--glass); border-radius:3px; overflow:hidden;">
@@ -4702,7 +4705,7 @@ async function showMetrics() {
           ${extractedMetrics.operatingIncome ? `
             <div>
               <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                <span style="font-size:0.9rem; color:var(--text);">Operating Income</span>
+                <span style="font-size:0.9rem; color:var(--text);">Operating Income${isQuarterly ? ' (Quarterly)' : ''}</span>
                 <span style="font-size:0.9rem; font-weight:600; color:#3b82f6;">$${extractedMetrics.operatingIncome.toFixed(1)}B</span>
               </div>
               <div style="height:6px; background:var(--glass); border-radius:3px; overflow:hidden;">
@@ -4724,7 +4727,7 @@ async function showMetrics() {
           ${extractedMetrics.netIncome ? `
             <div>
               <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                <span style="font-size:0.9rem; color:var(--text);">Net Income</span>
+                <span style="font-size:0.9rem; color:var(--text);">Net Income${isQuarterly ? ' (Quarterly)' : ''}</span>
                 <span style="font-size:0.9rem; font-weight:600; color:#a855f7;">$${extractedMetrics.netIncome.toFixed(1)}B</span>
               </div>
               <div style="height:6px; background:var(--glass); border-radius:3px; overflow:hidden;">
@@ -4846,7 +4849,7 @@ async function showMetrics() {
           ${extractedMetrics.operatingCashFlow ? `
             <div>
               <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                <span style="font-size:0.9rem; color:var(--text);">Operating Cash Flow</span>
+                <span style="font-size:0.9rem; color:var(--text);">Operating Cash Flow${isQuarterly ? ' (Quarterly)' : ''}</span>
                 <span style="font-size:0.9rem; font-weight:600; color:#a855f7;">$${extractedMetrics.operatingCashFlow.toFixed(1)}B</span>
               </div>
               <div style="height:6px; background:var(--glass); border-radius:3px; overflow:hidden;">
@@ -4857,7 +4860,7 @@ async function showMetrics() {
           ${extractedMetrics.capex ? `
             <div>
               <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                <span style="font-size:0.9rem; color:var(--text);">Capital Expenditures</span>
+                <span style="font-size:0.9rem; color:var(--text);">Capital Expenditures${isQuarterly ? ' (Quarterly)' : ''}</span>
                 <span style="font-size:0.9rem; font-weight:600; color:#8b5cf6;">$${extractedMetrics.capex.toFixed(1)}B</span>
               </div>
               <div style="height:6px; background:var(--glass); border-radius:3px; overflow:hidden;">
@@ -4868,7 +4871,7 @@ async function showMetrics() {
           ${extractedMetrics.freeCashFlow ? `
             <div>
               <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                <span style="font-size:0.9rem; color:var(--text);">Free Cash Flow</span>
+                <span style="font-size:0.9rem; color:var(--text);">Free Cash Flow${isQuarterly ? ' (Quarterly)' : ''}</span>
                 <span style="font-size:0.9rem; font-weight:600; color:#22c55e;">$${extractedMetrics.freeCashFlow.toFixed(1)}B</span>
               </div>
               <div style="height:6px; background:var(--glass); border-radius:3px; overflow:hidden;">

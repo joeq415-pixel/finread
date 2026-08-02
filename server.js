@@ -5695,10 +5695,68 @@ async function fetchPriorYearMetrics(cik, accessionNumber, formType) {
   }
 }
 
+// Define which tabs and metrics are relevant for each filing type
+function getFilingTypeMetadata(formType) {
+  const metadata = {
+    '10-K': {
+      name: '10-K (Annual Report)',
+      tabs: ['profitability', 'balanceSheet', 'cashFlow', 'advanced'],
+      periodicity: 'annual',
+      description: 'Annual financial statements covering the full fiscal year',
+      showTabs: true,
+      dataNote: 'All metrics are for the full fiscal year'
+    },
+    '10-Q': {
+      name: '10-Q (Quarterly Report)',
+      tabs: ['profitability', 'balanceSheet', 'cashFlow', 'advanced'],
+      periodicity: 'quarterly',
+      description: 'Quarterly financial statements for a 3-month period',
+      showTabs: true,
+      dataNote: 'Income statement is quarterly (3 months). Balance sheet is point-in-time as of quarter-end. Compare to prior quarters or annualize for full-year perspective.'
+    },
+    '20-F': {
+      name: '20-F (Foreign Annual Report)',
+      tabs: ['profitability', 'balanceSheet', 'cashFlow', 'advanced'],
+      periodicity: 'annual',
+      description: 'Annual report for foreign private issuers listed on US exchanges',
+      showTabs: true,
+      dataNote: 'Annual metrics using IFRS accounting standards. May differ from US GAAP reporting.'
+    },
+    '8-K': {
+      name: '8-K (Current Report)',
+      tabs: [],
+      periodicity: 'event',
+      description: 'Reports material events (not a financial statement)',
+      showTabs: false,
+      dataNote: 'This filing reports a specific event, not comprehensive financials.'
+    },
+    'DEF 14A': {
+      name: 'DEF 14A (Proxy Statement)',
+      tabs: [],
+      periodicity: 'governance',
+      description: 'Governance and executive compensation disclosure',
+      showTabs: false,
+      dataNote: 'This filing contains governance and compensation data, not financial statements.'
+    },
+    '13-F': {
+      name: '13-F (Holdings Report)',
+      tabs: [],
+      periodicity: 'holdings',
+      description: 'Institutional investor portfolio holdings',
+      showTabs: false,
+      dataNote: 'This filing shows portfolio holdings, not the issuer\'s financial statements.'
+    }
+  };
+  return metadata[formType] || metadata['10-K'];
+}
+
 // API: Calculate and return financial metrics
 app.post('/api/metrics', authMiddleware, async (req, res) => {
   try {
     const { sections, ticker, accessionNumber, cik, formType } = req.body;
+
+    // Get filing type metadata
+    const filingMetadata = getFilingTypeMetadata(formType);
 
     // 10-K/A filings are amendments and don't have traditional financial metrics
     if (formType === '10-K/A') {
@@ -5984,6 +6042,7 @@ app.post('/api/metrics', authMiddleware, async (req, res) => {
       message: message,
       metricsAvailability: metricsAvailability,
       ratiosAvailable: ratiosAvailable,
+      filingMetadata: filingMetadata,
       timestamp: new Date().toISOString()
     });
   } catch (err) {
