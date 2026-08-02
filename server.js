@@ -1200,14 +1200,20 @@ function extractAllXBRLMetrics(xbrlXml) {
     if (!value || value === 0) return value;
     const absValue = Math.abs(value);
 
-    // Too high: revenue/income > $5 trillion is unrealistic
-    // Too low: revenue/income < $0.001B ($1M) is unrealistic for public companies being analyzed
-    // (Most companies file when they're large enough; exception is very new IPOs)
-    // The year value (2026) divided by 1B = 0.000002026, which catches this error
-    if (absValue > 5 || absValue < 0.01) {
-      console.warn(`[extractAllXBRLMetrics] ⚠️ Rejecting unrealistic value for ${fieldName}: ${value}B (likely extraction error)`);
+    // Too high: most metrics > $5 trillion is unrealistic
+    if (absValue > 5) {
+      console.warn(`[extractAllXBRLMetrics] ⚠️ Rejecting unrealistic value for ${fieldName}: ${value}B (exceeds $5T threshold)`);
       return null;
     }
+
+    // Too low: only for revenue/totalAssets (which should be large for public companies)
+    // The year value (2026) divided by 1B = 0.000002026B, so threshold of 0.001B catches it
+    // Operating income, net income, etc. can legitimately be < 0.01B, so don't check them
+    if ((fieldName === 'revenue' || fieldName === 'totalAssets') && absValue < 0.001 && absValue > 0) {
+      console.warn(`[extractAllXBRLMetrics] ⚠️ Rejecting unrealistic value for ${fieldName}: ${value}B (< $1M likely extraction error)`);
+      return null;
+    }
+
     return value;
   };
 
