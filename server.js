@@ -2729,20 +2729,57 @@ app.post('/api/analyze/edgar', authMiddleware, async (req, res) => {
       shouldFetchXBRL ? fetchXBRLMetricsAsync(cik, accessionNumber, formType) : Promise.resolve(null)
     ]);
 
+    // Extract metrics from sections if available
+    let sectionMetrics = null;
+    if (sections) {
+      sectionMetrics = {};
+      // Extract numbers from key_figures in sections
+      if (sections.revenue && sections.revenue.key_figures) {
+        const revenueStr = sections.revenue.key_figures[0]?.value;
+        if (revenueStr) {
+          const match = revenueStr.match(/[\d.]+/);
+          if (match) sectionMetrics.revenue = parseFloat(match[0]);
+        }
+      }
+      if (sections.income && sections.income.key_figures) {
+        const netIncomeStr = sections.income.key_figures[0]?.value;
+        if (netIncomeStr) {
+          const match = netIncomeStr.match(/([-\d.]+)/);
+          if (match) sectionMetrics.netIncome = parseFloat(match[1]);
+        }
+      }
+      if (sections.cashflow && sections.cashflow.key_figures) {
+        const ocfStr = sections.cashflow.key_figures[0]?.value;
+        if (ocfStr) {
+          const match = ocfStr.match(/[\d.]+/);
+          if (match) sectionMetrics.operatingCashFlow = parseFloat(match[0]);
+        }
+      }
+      if (sections.balance && sections.balance.key_figures) {
+        const assetsStr = sections.balance.key_figures[0]?.value;
+        if (assetsStr) {
+          const match = assetsStr.match(/[\d.]+/);
+          if (match) sectionMetrics.totalAssets = parseFloat(match[0]);
+        }
+      }
+      console.log(`[analyze] Extracted section metrics:`, sectionMetrics);
+    }
+
     // Always regenerate takeaways with metrics if available (more reliable than detection)
     let finalTakeaways = takeaways;
     console.log(`[analyze] XBRL Metrics received:`, xbrlMetrics);
-    if (xbrlMetrics) {
-      const hasMetrics = Object.values(xbrlMetrics).some(v => v !== null);
-      console.log(`[analyze] Has metrics: ${hasMetrics}`, { revenue: xbrlMetrics.revenue, netIncome: xbrlMetrics.netIncome });
+    const metricsToUse = xbrlMetrics || sectionMetrics;
+    if (metricsToUse) {
+      const hasMetrics = Object.values(metricsToUse).some(v => v !== null);
+      console.log(`[analyze] Has metrics: ${hasMetrics}`, { revenue: metricsToUse.revenue, netIncome: metricsToUse.netIncome });
       if (hasMetrics) {
-        console.log(`[analyze] Regenerating takeaways with XBRL metrics`);
-        const takeawaysWithMetrics = await generateTakeaways(text, companyName, formType, xbrlMetrics);
+        console.log(`[analyze] Regenerating takeaways with metrics (source: ${xbrlMetrics ? 'XBRL' : 'sections'})`);
+        const takeawaysWithMetrics = await generateTakeaways(text, companyName, formType, metricsToUse);
         finalTakeaways = takeawaysWithMetrics.takeaways;
         console.log(`[analyze] Takeaways regenerated with metrics:`, finalTakeaways);
       }
     } else {
-      console.log(`[analyze] No XBRL metrics available`);
+      console.log(`[analyze] No metrics available from XBRL or sections`);
     }
 
     console.log(`[analyze] AI analysis + XBRL fetch completed in ${Date.now() - t2}ms`);
