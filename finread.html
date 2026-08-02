@@ -3419,12 +3419,32 @@ function showEmailVerificationReminder() {
       </div>
       <div style="padding: 0 28px 20px; display: flex; gap: 12px;">
         <button class="btn btn-ghost" style="flex: 1;" onclick="closeVerificationReminder()">I'll Verify Later</button>
-        <button class="btn btn-primary" style="flex: 1;" onclick="window.location.href='/verify-email'">Go to Verification</button>
+        <button class="btn btn-primary" style="flex: 1;" id="resend-verification-btn" onclick="resendVerificationEmail()">Resend Email</button>
       </div>
     </div>
   `;
 
   document.body.appendChild(modal);
+}
+
+async function resendVerificationEmail() {
+  const btn = document.getElementById('resend-verification-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+
+  try {
+    const res = await fetch(`${API}/api/auth/resend-verification`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${authToken}` }
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Failed to resend verification email');
+    showToast('Verification email sent! Check your inbox.', 'success');
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Resend Email'; }
+  }
 }
 
 function closeVerificationReminder() {
@@ -4045,8 +4065,7 @@ async function submitQuestion() {
   if (!currentUser || !currentAnalysis) return;
 
   if (!currentUser.emailVerified) {
-    showToast('Please verify your email before asking questions.', 'error');
-    window.location.href = '/verify-email';
+    showEmailVerificationReminder();
     return;
   }
 
@@ -6526,8 +6545,7 @@ async function searchEdgar() {
   }
 
   if (!currentUser.emailVerified) {
-    showToast('Please verify your email before accessing tools.', 'error');
-    window.location.href = '/verify-email';
+    showEmailVerificationReminder();
     return;
   }
 
@@ -6618,8 +6636,7 @@ async function analyzeEdgarFiling(ticker, accessionNumber, primaryDocument, form
   }
 
   if (!currentUser.emailVerified) {
-    showToast('Please verify your email before analyzing filings.', 'error');
-    window.location.href = '/verify-email';
+    showEmailVerificationReminder();
     return;
   }
 

@@ -270,7 +270,7 @@ const db = {
 
   async getUserByEmailForReset(email) {
     const result = await sql`
-      SELECT id, email FROM users WHERE email = ${email}
+      SELECT id, email, name FROM users WHERE email = ${email}
     `;
     return result.rows[0];
   }

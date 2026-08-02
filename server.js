@@ -577,7 +577,7 @@ app.post('/api/auth/register', async (req, res) => {
         subject: 'Verify your FinRead email',
         html: `
           <h2>Welcome to FinRead!</h2>
-          <p>Hi ${name || 'there'},</p>
+          <p>Hi ${user.name},</p>
           <p>Click the link below to verify your email and start analyzing financial reports:</p>
           <a href="${verificationLink}" style="background-color: #0066cc; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Verify Email</a>
           <p>Or copy this link: ${verificationLink}</p>
@@ -638,6 +638,43 @@ app.post('/api/auth/verify-email', async (req, res) => {
   }
 });
 
+// Resend verification email endpoint
+app.post('/api/auth/resend-verification', authMiddleware, async (req, res) => {
+  try {
+    const user = await db.getUserById(req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    await db.createVerificationToken(user.id, verificationToken);
+
+    const origin = process.env.DOMAIN || 'https://finread.io';
+    const verificationLink = `${origin}/verify-email?token=${verificationToken}`;
+    try {
+      await resend.emails.send({
+        from: 'FinRead <noreply@finread.io>',
+        to: user.email,
+        subject: 'Verify your FinRead email',
+        html: `
+          <h2>Welcome to FinRead!</h2>
+          <p>Hi ${user.name},</p>
+          <p>Click the link below to verify your email and start analyzing financial reports:</p>
+          <a href="${verificationLink}" style="background-color: #0066cc; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Verify Email</a>
+          <p>Or copy this link: ${verificationLink}</p>
+          <p>This link expires in 24 hours.</p>
+          <p>Best,<br>The FinRead Team</p>
+        `
+      });
+    } catch (emailErr) {
+      console.error('Error sending verification email:', emailErr);
+      return res.status(500).json({ error: 'Failed to send verification email' });
+    }
+
+    res.json({ success: true, message: 'Verification email sent! Check your inbox.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Forgot password endpoint
 app.post('/api/auth/forgot-password', async (req, res) => {
   try {
@@ -662,7 +699,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
         subject: 'Reset your FinRead password',
         html: `
           <h2>Password Reset Request</h2>
-          <p>Hi ${user.email},</p>
+          <p>Hi ${user.name},</p>
           <p>Click the link below to reset your password:</p>
           <a href="${resetLink}" style="background-color: #0066cc; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Reset Password</a>
           <p>Or copy this link: ${resetLink}</p>
