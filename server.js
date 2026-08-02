@@ -6586,6 +6586,32 @@ app.post('/api/cache/clear', authMiddleware, (req, res) => {
   }
 });
 
+// Test XBRL extraction (debug endpoint)
+app.post('/api/debug/test-xbrl', async (req, res) => {
+  try {
+    const { cik, accessionNumber } = req.body;
+    if (!cik || !accessionNumber) {
+      return res.status(400).json({ error: 'Missing cik or accessionNumber' });
+    }
+
+    console.log(`[debug-xbrl] Testing XBRL extraction for CIK ${cik}, Accession ${accessionNumber}`);
+    const metrics = await fetchAllXBRLMetrics(cik, accessionNumber);
+
+    res.json({
+      success: !!metrics,
+      metrics,
+      debugInfo: {
+        receivedMetrics: metrics !== null,
+        hasAnyValues: metrics ? Object.values(metrics).some(v => v !== null) : false,
+        metrics
+      }
+    });
+  } catch (err) {
+    console.error('[debug-xbrl] Error:', err);
+    res.status(500).json({ error: err.message, stack: err.stack });
+  }
+});
+
 // ── START ─────────────────────────────────────────────────────────────────────
 
 async function startServer() {
