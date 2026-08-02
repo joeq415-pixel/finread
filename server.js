@@ -2488,16 +2488,30 @@ Rules — follow all of these:
 }
 
 async function generateTakeaways(text, companyName, formType, metrics = null) {
-  const metricsContext = metrics ? `
-FINANCIAL METRICS FROM THIS REPORT:
-- Revenue: ${metrics.revenue ? `$${(metrics.revenue).toFixed(2)}B` : 'N/A'}
-- Net Income: ${metrics.netIncome ? `$${(metrics.netIncome).toFixed(2)}B` : 'N/A'}
-- Operating Income: ${metrics.operatingIncome ? `$${(metrics.operatingIncome).toFixed(2)}B` : 'N/A'}
-- Operating Cash Flow: ${metrics.operatingCashFlow ? `$${(metrics.operatingCashFlow).toFixed(2)}B` : 'N/A'}
-- Free Cash Flow: ${metrics.freeCashFlow ? `$${(metrics.freeCashFlow).toFixed(2)}B` : 'N/A'}
-- Total Assets: ${metrics.totalAssets ? `$${(metrics.totalAssets).toFixed(2)}B` : 'N/A'}
-- Equity: ${metrics.equity ? `$${(metrics.equity).toFixed(2)}B` : 'N/A'}
-` : '';
+  // Build metrics summary with actual numbers
+  let metricsContext = '';
+  let metricsInstructions = '';
+
+  if (metrics && Object.values(metrics).some(v => v !== null)) {
+    const formatNumber = (value) => value ? `$${Math.abs(value).toFixed(2)}B` : 'N/A';
+
+    metricsContext = `
+ACTUAL FINANCIAL METRICS EXTRACTED FROM THIS ${formType.toUpperCase()}:
+- Revenue: ${formatNumber(metrics.revenue)}
+- Net Income: ${formatNumber(metrics.netIncome)} (${metrics.netIncome < 0 ? 'LOSS' : 'PROFIT'})
+- Operating Income: ${formatNumber(metrics.operatingIncome)}
+- Operating Cash Flow: ${formatNumber(metrics.operatingCashFlow)}
+- Free Cash Flow: ${formatNumber(metrics.freeCashFlow)}
+- Total Assets: ${formatNumber(metrics.totalAssets)}
+- Equity: ${formatNumber(metrics.equity)}
+`;
+
+    metricsInstructions = `
+IMPORTANT: You MUST reference these actual extracted numbers in your takeaways. For example:
+- If revenue is ${formatNumber(metrics.revenue)}, mention this in a takeaway
+- If net income shows ${formatNumber(metrics.netIncome)}, address profitability directly
+- Use these metrics to make specific, fact-based statements about the company's financial health`;
+  }
 
   const makeRequest = () => anthropic.messages.create({
     model: 'claude-sonnet-4-6',
@@ -2507,10 +2521,10 @@ FINANCIAL METRICS FROM THIS REPORT:
       content: `You are explaining a financial report to someone who isn't a financial expert. Make it simple and easy to understand.
 
 Based on this ${formType} from ${companyName}, provide exactly 6 simple, clear takeaways. What should someone know about this company after reading its financial report?
-
 ${metricsContext}
+${metricsInstructions}
 
-Text:
+Text excerpt (first 8000 chars):
 ---
 ${text.substring(0, 8000)}
 ---
@@ -2518,7 +2532,7 @@ ${text.substring(0, 8000)}
 Return ONLY valid JSON:
 {
   "takeaways": [
-    "Simple fact about the company with specific numbers",
+    "Specific fact with actual numbers from the metrics above",
     "Another important point with numbers",
     "What's going well for this company",
     "What might be a challenge or concern",
@@ -2529,7 +2543,7 @@ Return ONLY valid JSON:
 
 Rules for each takeaway:
 - Write it so anyone can understand it — no finance jargon
-- Include specific numbers (like "$2.5B" or "15% growth") when possible
+- MUST include specific numbers from the metrics provided above
 - Focus on facts that matter: Is the company making money? Growing? Having problems?
 - Be honest about both good news and bad news`,
     }],
