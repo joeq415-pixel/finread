@@ -1196,33 +1196,27 @@ function extractAllXBRLMetrics(xbrlXml, formType = '10-K') {
 
   // Sanitize metrics: reject obviously wrong values
   // This catches extraction errors like accidentally using year as value
-  // Filing-type aware: quarterly filings have tighter constraints than annual filings
   const isQuarterly = formType === '10-Q';
   const sanitize = (value, fieldName) => {
     if (!value || value === 0) return value;
     const absValue = Math.abs(value);
 
-    // Too high: stricter for quarterly filings
-    // For revenue specifically: quarterly max ~$200B (highest is Apple at ~$100B), annual max ~$2T
-    let maxThreshold = 5;  // Default $5T
-    if (isQuarterly && fieldName === 'revenue') {
-      maxThreshold = 0.2;  // $200B max for quarterly revenue
-    } else if (isQuarterly) {
-      maxThreshold = 1;    // $1T max for other quarterly metrics
-    } else if (fieldName === 'revenue' || fieldName === 'totalAssets') {
-      maxThreshold = 2;    // $2T max for annual revenue/assets
-    }
-
-    if (absValue > maxThreshold) {
-      console.warn(`[extractAllXBRLMetrics] ⚠️ Rejecting unrealistic value for ${fieldName}: ${value}B (exceeds $${maxThreshold}T threshold for ${formType})`);
+    // Too high: most metrics > $5 trillion is unrealistic
+    if (absValue > 5) {
+      console.warn(`[extractAllXBRLMetrics] ⚠️ Rejecting unrealistic value for ${fieldName}: ${value}B (exceeds $5T threshold)`);
       return null;
     }
 
     // Too low: only for revenue/totalAssets (which should be large for public companies)
     // The year value (2026) divided by 1B = 0.000002026B, so threshold of 0.001B catches it
-    // Operating income, net income, etc. can legitimately be < 0.01B, so don't check them
     if ((fieldName === 'revenue' || fieldName === 'totalAssets') && absValue < 0.001 && absValue > 0) {
       console.warn(`[extractAllXBRLMetrics] ⚠️ Rejecting unrealistic value for ${fieldName}: ${value}B (< $1M likely extraction error)`);
+      return null;
+    }
+
+    // Specific check for year values in quarterly revenue: reject 2020-2030 range that got extracted
+    if (isQuarterly && fieldName === 'revenue' && absValue >= 2 && absValue <= 3) {
+      console.warn(`[extractAllXBRLMetrics] ⚠️ Rejecting likely year value for ${fieldName}: ${value}B (in 2-3T range, suspicious for quarterly data)`);
       return null;
     }
 
