@@ -2651,12 +2651,13 @@ app.post('/api/analyze/edgar', authMiddleware, async (req, res) => {
       shouldFetchXBRL ? fetchXBRLMetricsAsync(cik, accessionNumber, formType) : Promise.resolve(null)
     ]);
 
-    // If metrics were fetched after analysis, regenerate takeaways with metrics
+    // Always regenerate takeaways with metrics if available (more reliable than detection)
     let finalTakeaways = takeaways;
-    if (xbrlMetrics && takeaways.some(t => t.includes('actual numbers') || t.includes('complete financial picture'))) {
+    if (xbrlMetrics && Object.values(xbrlMetrics).some(v => v !== null)) {
       console.log(`[analyze] Regenerating takeaways with XBRL metrics`);
       const takeawaysWithMetrics = await generateTakeaways(text, companyName, formType, xbrlMetrics);
       finalTakeaways = takeawaysWithMetrics.takeaways;
+      console.log(`[analyze] Takeaways regenerated with metrics`);
     }
 
     console.log(`[analyze] AI analysis + XBRL fetch completed in ${Date.now() - t2}ms`);
