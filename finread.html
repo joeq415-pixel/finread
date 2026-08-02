@@ -4520,11 +4520,13 @@ async function showMetrics() {
     // Hide loading, show content
     document.getElementById('metrics-loading').style.display = 'none';
 
+    const formType = currentAnalysis?.formType || '';
+    const isEightK = formType === '8-K';
+
     // Check if this filing type doesn't have traditional metrics (10-K/A, 8-K, DEF 14A, 13-F)
     if (message && Object.keys(extractedMetrics || {}).length === 0) {
-      const formType = currentAnalysis?.formType || '';
       let icon = '📋';
-      if (formType === '8-K') icon = '📰';
+      if (isEightK) icon = '📰';
       else if (formType === 'DEF 14A') icon = '🗳️';
       else if (formType === '13-F') icon = '💼';
       document.getElementById('metrics-content').innerHTML = `
@@ -4535,6 +4537,16 @@ async function showMetrics() {
         </div>
       `;
       return;
+    }
+
+    // For 8-K filings, mark that data may be incomplete
+    let eightKWarning = '';
+    if (isEightK) {
+      eightKWarning = `
+        <div style="background:rgba(249, 115, 22, 0.1); border:1px solid rgba(249, 115, 22, 0.3); border-radius:8px; padding:12px; margin-bottom:16px; font-size:0.85rem; color:var(--text);">
+          <strong style="color:#f97316;">⚠️ Limited Financial Data:</strong> 8-K filings don't contain comprehensive financial statements. Metrics shown may be incomplete or partial. For complete analysis, review the most recent <strong>10-K</strong> (annual) or <strong>10-Q</strong> (quarterly) filing.
+        </div>
+      `;
     }
 
     // Helper function to determine if a metric is positive/negative and return badge
@@ -4606,6 +4618,7 @@ async function showMetrics() {
 
     // Build metrics display with tabs
     let html = `
+      ${eightKWarning}
       <!-- Tab Navigation -->
       <div class="section-tabs" style="margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:0;">
         <button class="tab metrics-tab active" data-tab="metrics-profitability" onclick="switchMetricsTab('metrics-profitability')">Profitability</button>
