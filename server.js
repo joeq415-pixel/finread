@@ -1196,7 +1196,6 @@ function extractAllXBRLMetrics(xbrlXml, formType = '10-K') {
 
   // Sanitize metrics: reject obviously wrong values
   // This catches extraction errors like accidentally using year as value
-  const isQuarterly = formType === '10-Q';
   const sanitize = (value, fieldName) => {
     if (!value || value === 0) return value;
     const absValue = Math.abs(value);
@@ -1211,12 +1210,6 @@ function extractAllXBRLMetrics(xbrlXml, formType = '10-K') {
     // The year value (2026) divided by 1B = 0.000002026B, so threshold of 0.001B catches it
     if ((fieldName === 'revenue' || fieldName === 'totalAssets') && absValue < 0.001 && absValue > 0) {
       console.warn(`[extractAllXBRLMetrics] ⚠️ Rejecting unrealistic value for ${fieldName}: ${value}B (< $1M likely extraction error)`);
-      return null;
-    }
-
-    // Specific check for year values in quarterly revenue: reject 2020-2030 range that got extracted
-    if (isQuarterly && fieldName === 'revenue' && absValue >= 2 && absValue <= 3) {
-      console.warn(`[extractAllXBRLMetrics] ⚠️ Rejecting likely year value for ${fieldName}: ${value}B (in 2-3T range, suspicious for quarterly data)`);
       return null;
     }
 
