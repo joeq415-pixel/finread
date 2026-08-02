@@ -4648,11 +4648,10 @@ async function showMetrics() {
     };
 
     // Build metrics display with tabs
+    // Note: quarterlyWarning, missingRevenueWarning, unrealisticRatiosWarning will be added
+    // only to the Profitability tab where they're relevant
     let html = `
       ${eightKWarning}
-      ${quarterlyWarning}
-      ${missingRevenueWarning}
-      ${unrealisticRatiosWarning}
       <!-- Tab Navigation -->
       <div class="section-tabs" style="margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:0;">
         <button class="tab metrics-tab active" data-tab="metrics-profitability" onclick="switchMetricsTab('metrics-profitability')">Profitability</button>
@@ -4663,6 +4662,9 @@ async function showMetrics() {
 
       <!-- TAB 1: PROFITABILITY -->
       <div id="metrics-profitability" class="metrics-tab-content" style="display:block;">
+        ${quarterlyWarning}
+        ${missingRevenueWarning}
+        ${unrealisticRatiosWarning}
         <div style="display:grid; gap:14px; margin-bottom:20px;">
           ${extractedMetrics.revenue ? `
             <div>
