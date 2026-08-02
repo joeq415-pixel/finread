@@ -2491,8 +2491,17 @@ async function generateTakeaways(text, companyName, formType, metrics = null) {
   // Build metrics summary with actual numbers
   let metricsContext = '';
   let metricsInstructions = '';
+  let financialSectionsText = '';
 
   console.log(`[generateTakeaways] Called with metrics:`, metrics);
+
+  // Extract financial statements sections from the text
+  // Look for consolidated statements sections which contain actual numbers
+  const financialMatch = text.match(/(?:CONSOLIDATED\s+)?(?:CONDENSED\s+)?(?:BALANCE\s+SHEET|STATEMENTS?\s+OF\s+(?:OPERATIONS|INCOME|COMPREHENSIVE|CASH\s+FLOWS)|Financial\s+Statements)([\s\S]{0,5000}?)(?=\n\n[A-Z]|\n\s*F-\d+|$)/i);
+  if (financialMatch) {
+    financialSectionsText = financialMatch[1].substring(0, 3000);
+    console.log(`[generateTakeaways] Found financial statements section (${financialMatch[1].length} chars)`);
+  }
 
   if (metrics && Object.values(metrics).some(v => v !== null)) {
     console.log(`[generateTakeaways] Metrics are present and contain values`);
@@ -2527,40 +2536,43 @@ IMPORTANT: You MUST reference these actual extracted numbers in your takeaways. 
 
 Based on this ${formType} from ${companyName}, provide exactly 6 simple, clear takeaways. What should someone know about this company after reading its financial report?
 
-${metricsContext ? metricsContext + metricsInstructions : `IMPORTANT: Search the text for these key financial numbers and MUST include them in your takeaways:
-- Revenue or Total Revenue
-- Net Income or Loss (labeled as "net loss" if negative)
-- Operating Income
-- Cash Flow from Operations
+${metricsContext ? metricsContext + metricsInstructions : `IMPORTANT: You MUST find and include specific financial numbers in your takeaways:
+- Revenue or Total Revenue (look for dollar amounts like $X.XB or $XXM)
+- Net Income or Net Loss (profit/loss figures)
+- Operating Income or Cash Flow from Operations
 - Total Assets
-- Shareholder Equity or Stockholders' Equity
+- Shareholder Equity
 
-Find these numbers in the text and use them. If you find them, you MUST reference them in at least 3 of your takeaways.`}
+Search the financial statements section provided below for actual numbers. You MUST include at least one specific number in EVERY takeaway.`}
 
-Text excerpt (first 8000 chars):
+FINANCIAL STATEMENTS SECTION (contains actual numbers):
 ---
-${text.substring(0, 8000)}
+${financialSectionsText || text.substring(0, 4000)}
+---
+
+CONTEXT (first part of filing):
+---
+${text.substring(0, 4000)}
 ---
 
 Return ONLY valid JSON:
 {
   "takeaways": [
-    "Specific fact with actual numbers found in the text",
-    "Another important point with numbers found in the text",
-    "What's going well for this company with supporting numbers",
-    "What might be a challenge or concern with numbers from the report",
-    "How the company is spending money - include actual figures",
-    "What this means for the company's future - reference the numbers above"
+    "Specific fact with actual dollar amounts or numbers from the statements above",
+    "Another key point with specific numbers from the filing",
+    "What's performing well for the company - include actual metrics",
+    "What might be a concern or risk - with supporting numbers",
+    "How the company is spending money or investing - with figures",
+    "What this means for the company's future based on the numbers"
   ]
 }
 
-Rules for each takeaway:
-- Write it so anyone can understand it — no finance jargon
-- ABSOLUTELY MUST include specific dollar amounts or percentages from the filing
-- Find numbers like "$2.9B", "$500M", "5% growth", etc. in the text and mention them
-- Focus on facts that matter: Is the company making money? Growing? Having problems?
-- Be honest about both good news and bad news
-- Every takeaway should have at least one specific number from the filing`,
+CRITICAL RULES:
+- EVERY takeaway MUST have at least one specific number (e.g., "$2.9B", "$500M", "15% increase")
+- Use numbers directly from the financial statements sections above
+- Write simply - anyone should understand it, no finance jargon
+- Reference actual metrics like revenue, income, assets, cash flow, equity
+- Be honest about both positive and negative news`,
     }],
   });
 
