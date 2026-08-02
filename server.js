@@ -2487,6 +2487,38 @@ Rules — follow all of these:
   return parsed;
 }
 
+// Extract financial numbers from text using keyword search
+function extractFinancialNumbers(text) {
+  const extracted = {};
+
+  // Define keyword patterns to search for
+  const patterns = {
+    revenue: [/(?:total\s+)?revenue[s]?[:\s]+(?:\$\s*)?(\d{1,3}(?:,\d{3})*(?:\.\d+)?)\s*(?:million|billion|thousand|M|B|K)/i],
+    netIncome: [/net\s+(?:income|loss|profit)[:\s]+(?:\(?\$?\s*)?(\d{1,3}(?:,\d{3})*(?:\.\d+)?)\s*(?:million|billion|thousand|M|B|K)/i],
+    operatingIncome: [/operating\s+(?:income|loss|profit)[:\s]+(?:\$\s*)?(\d{1,3}(?:,\d{3})*(?:\.\d+)?)\s*(?:million|billion|thousand|M|B|K)/i],
+    operatingCashFlow: [/operating\s+(?:cash\s+)?flow[:\s]+(?:\$\s*)?(\d{1,3}(?:,\d{3})*(?:\.\d+)?)\s*(?:million|billion|thousand|M|B|K)/i, /cash\s+from\s+operations[:\s]+(?:\$\s*)?(\d{1,3}(?:,\d{3})*(?:\.\d+)?)\s*(?:million|billion|thousand|M|B|K)/i],
+    totalAssets: [/(?:total\s+)?assets?[:\s]+(?:\$\s*)?(\d{1,3}(?:,\d{3})*(?:\.\d+)?)\s*(?:million|billion|thousand|M|B|K)/i],
+    equity: [/(?:stockholders'?|shareholders'?)\s+equity[:\s]+(?:\$\s*)?(\d{1,3}(?:,\d{3})*(?:\.\d+)?)\s*(?:million|billion|thousand|M|B|K)/i],
+  };
+
+  // Search for each metric
+  for (const [key, patternList] of Object.entries(patterns)) {
+    for (const pattern of patternList) {
+      const match = text.match(pattern);
+      if (match && match[1]) {
+        const value = parseFloat(match[1].replace(/,/g, ''));
+        if (!isNaN(value) && value > 0) {
+          extracted[key] = value;
+          console.log(`[extractFinancialNumbers] Found ${key}: ${value}`);
+          break;
+        }
+      }
+    }
+  }
+
+  return Object.keys(extracted).length > 0 ? extracted : null;
+}
+
 async function generateTakeaways(text, companyName, formType, metrics = null) {
   // Build metrics summary with actual numbers
   let metricsContext = '';
@@ -2494,9 +2526,23 @@ async function generateTakeaways(text, companyName, formType, metrics = null) {
 
   console.log(`[generateTakeaways] Called with metrics:`, metrics);
 
+  // If no XBRL metrics, try keyword extraction from text
+  if (!metrics) {
+    const extractedNumbers = extractFinancialNumbers(text);
+    if (extractedNumbers) {
+      console.log(`[generateTakeaways] Extracted numbers from text:`, extractedNumbers);
+      metrics = extractedNumbers;
+    }
+  }
+
   if (metrics && Object.values(metrics).some(v => v !== null)) {
     console.log(`[generateTakeaways] Metrics are present and contain values`);
-    const formatNumber = (value) => value ? `$${Math.abs(value).toFixed(2)}B` : 'N/A';
+    const formatNumber = (value) => {
+      if (!value) return 'N/A';
+      if (value > 1000) return `$${(value / 1000).toFixed(1)}T`;
+      if (value > 1) return `$${value.toFixed(1)}B`;
+      return `$${(value * 1000).toFixed(0)}M`;
+    };
 
     metricsContext = `
 ACTUAL FINANCIAL METRICS EXTRACTED FROM THIS ${formType.toUpperCase()}:
