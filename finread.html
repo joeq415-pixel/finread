@@ -4554,7 +4554,7 @@ async function showMetrics() {
     if (formType === '10-Q') {
       quarterlyWarning = `
         <div style="background:rgba(59, 130, 246, 0.1); border:1px solid rgba(59, 130, 246, 0.3); border-radius:8px; padding:12px; margin-bottom:16px; font-size:0.85rem; color:var(--text);">
-          <strong style="color:#3b82f6;">ℹ️ Quarterly Data:</strong> Income statement metrics (revenue, net income) are for <strong>this quarter only</strong>, not annualized. Balance sheet metrics are as of quarter-end. Profitability ratios may appear distorted when comparing quarterly income to point-in-time balance sheet values. For complete analysis, review <strong>trailing-twelve-month (TTM)</strong> or <strong>10-K annual</strong> data.
+          <strong style="color:#3b82f6;">ℹ️ This is quarterly data (3 months):</strong> The revenue and net income numbers below are for just this quarter, not the whole year. To see the full year picture, look at the 10-K annual report instead.
         </div>
       `;
     }
@@ -4575,7 +4575,7 @@ async function showMetrics() {
         (extractedMetrics.netIncome / extractedMetrics.equity > 5)) {
       unrealisticRatiosWarning = `
         <div style="background:rgba(239, 68, 68, 0.1); border:1px solid rgba(239, 68, 68, 0.3); border-radius:8px; padding:12px; margin-bottom:16px; font-size:0.85rem; color:var(--text);">
-          <strong style="color:#ef4444;">⚠️ Data Quality Issue:</strong> Profitability ratios appear unrealistic, suggesting a mismatch in data periods or scales (e.g., quarterly income vs annual balance sheet). ROE is not displayed. For accurate analysis, verify the data directly in the filing.
+          <strong style="color:#ef4444;">⚠️ Data doesn't match up:</strong> The numbers don't make sense when compared to each other (like comparing 3-month profits to year-end balance sheet). We're not showing those ratios here. Check the filing directly to verify the real numbers.
         </div>
       `;
     }

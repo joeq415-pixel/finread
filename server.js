@@ -1194,6 +1194,35 @@ function extractAllXBRLMetrics(xbrlXml) {
 
   console.log('[extractAllXBRLMetrics] Revenue:', metrics.revenue, 'NetIncome:', metrics.netIncome, 'OperatingCF:', metrics.operatingCashFlow, 'CapEx:', metrics.capex);
 
+  // Sanitize metrics: reject obviously wrong values (e.g., revenue > $5 trillion is unrealistic)
+  // This catches extraction errors like accidentally using year as value
+  const sanitize = (value) => {
+    if (!value || value === 0) return value;
+    // Most companies have revenue/income < $2T. If > $5T, likely an extraction error
+    if (Math.abs(value) > 5) {
+      console.warn(`[extractAllXBRLMetrics] ⚠️ Rejecting unrealistic value: ${value}B (likely extraction error)`);
+      return null;
+    }
+    return value;
+  };
+
+  metrics.revenue = sanitize(metrics.revenue);
+  metrics.netIncome = sanitize(metrics.netIncome);
+  metrics.operatingIncome = sanitize(metrics.operatingIncome);
+  metrics.grossProfit = sanitize(metrics.grossProfit);
+  metrics.operatingCashFlow = sanitize(metrics.operatingCashFlow);
+  metrics.capex = sanitize(metrics.capex);
+  metrics.totalAssets = sanitize(metrics.totalAssets);
+  metrics.totalLiabilities = sanitize(metrics.totalLiabilities);
+  metrics.equity = sanitize(metrics.equity);
+
+  // Recalculate free cash flow if needed
+  if (metrics.operatingCashFlow && metrics.capex) {
+    metrics.freeCashFlow = metrics.operatingCashFlow - (metrics.capex > 0 ? metrics.capex : Math.abs(metrics.capex));
+  } else {
+    metrics.freeCashFlow = null;
+  }
+
   return metrics;
 }
 
