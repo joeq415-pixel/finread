@@ -2536,12 +2536,13 @@ async function generateTakeaways(text, companyName, formType, metrics = null) {
   }
 
   if (metrics && Object.values(metrics).some(v => v !== null)) {
-    console.log(`[generateTakeaways] Metrics are present and contain values`);
+    console.log(`[generateTakeaways] Metrics are present and contain values:`, metrics);
     const formatNumber = (value) => {
       if (!value) return 'N/A';
-      if (value > 1000) return `$${(value / 1000).toFixed(1)}T`;
-      if (value > 1) return `$${value.toFixed(1)}B`;
-      return `$${(value * 1000).toFixed(0)}M`;
+      // Extracted numbers are in millions, so convert to billions
+      if (value > 1000) return `$${(value / 1000).toFixed(1)}B`;
+      if (value >= 1) return `$${value.toFixed(0)}M`;
+      return `$${(value * 1000).toFixed(0)}K`;
     };
 
     metricsContext = `
