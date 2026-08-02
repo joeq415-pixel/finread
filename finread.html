@@ -4650,18 +4650,46 @@ async function showMetrics() {
       return `<span style="display:inline-block; margin-left:6px; padding:2px 6px; background:${badgeColor}20; color:${badgeColor}; border-radius:3px; font-size:0.7rem; font-weight:600;" title="${reason}">${badgeIcon}</span>`;
     };
 
-    // Build metrics display with tabs
-    // Note: quarterlyWarning, missingRevenueWarning, unrealisticRatiosWarning will be added
-    // only to the Profitability tab where they're relevant
+    // Check if this filing type should show financial metrics tabs
+    const shouldShowMetricsTabs = filingMetadata && filingMetadata.showTabs;
+
+    // Build metrics display with dynamic tabs based on filing type
+    // For 8-K, DEF 14A, 13-F: show custom message instead of metrics tabs
+    // For 10-K, 10-Q, 20-F: show all 4 standard tabs
     let html = `
-      ${eightKWarning}
+      ${eightKWarning}`;
+
+    if (!shouldShowMetricsTabs) {
+      // Filing type doesn't have traditional financial metrics - show custom message
+      const filingName = filingMetadata?.name || formType;
+      const description = filingMetadata?.description || 'This filing type does not contain traditional financial statements';
+      let icon = '📋';
+      if (formType === '8-K') icon = '📰';
+      else if (formType === 'DEF 14A') icon = '🗳️';
+      else if (formType === '13-F') icon = '💼';
+
+      html += `
+        <div class="empty-state" style="padding: 40px 20px; text-align: center;">
+          <div style="font-size: 3rem; margin-bottom: 16px;">${icon}</div>
+          <h3 style="margin: 0 0 12px 0; font-size: 1.1rem; color: var(--text);">${filingName}</h3>
+          <p style="margin: 0 0 16px 0; color: var(--muted); font-size: 0.95rem;">${description}</p>
+          <p style="margin: 0; color: var(--muted); font-size: 0.9rem;">${filingMetadata?.dataNote || 'This filing does not contain comprehensive financial statements.'}</p>
+        </div>
+      `;
+
+      document.getElementById('metrics-content').innerHTML = html;
+      return;
+    }
+
+    // Filing type has financial metrics - show standard tabs
+    html += `
       <!-- Tab Navigation -->
       <div class="section-tabs" style="margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:0;">
         <button class="tab metrics-tab active" data-tab="metrics-profitability" onclick="switchMetricsTab('metrics-profitability')">Profitability</button>
         <button class="tab metrics-tab" data-tab="metrics-balance" onclick="switchMetricsTab('metrics-balance')">Balance Sheet</button>
         <button class="tab metrics-tab" data-tab="metrics-cashflow" onclick="switchMetricsTab('metrics-cashflow')">Cash Flow</button>
         <button class="tab metrics-tab" data-tab="metrics-advanced" onclick="switchMetricsTab('metrics-advanced')">Advanced</button>
-      </div>
+      </div>`
 
       <!-- TAB 1: PROFITABILITY -->
       <div id="metrics-profitability" class="metrics-tab-content" style="display:block;">
