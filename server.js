@@ -2520,14 +2520,22 @@ IMPORTANT: You MUST reference these actual extracted numbers in your takeaways. 
 
   const makeRequest = () => anthropic.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 800,
+    max_tokens: 1200,
     messages: [{
       role: 'user',
       content: `You are explaining a financial report to someone who isn't a financial expert. Make it simple and easy to understand.
 
 Based on this ${formType} from ${companyName}, provide exactly 6 simple, clear takeaways. What should someone know about this company after reading its financial report?
-${metricsContext}
-${metricsInstructions}
+
+${metricsContext ? metricsContext + metricsInstructions : `IMPORTANT: Search the text for these key financial numbers and MUST include them in your takeaways:
+- Revenue or Total Revenue
+- Net Income or Loss (labeled as "net loss" if negative)
+- Operating Income
+- Cash Flow from Operations
+- Total Assets
+- Shareholder Equity or Stockholders' Equity
+
+Find these numbers in the text and use them. If you find them, you MUST reference them in at least 3 of your takeaways.`}
 
 Text excerpt (first 8000 chars):
 ---
@@ -2537,20 +2545,22 @@ ${text.substring(0, 8000)}
 Return ONLY valid JSON:
 {
   "takeaways": [
-    "Specific fact with actual numbers from the metrics above",
-    "Another important point with numbers",
-    "What's going well for this company",
-    "What might be a challenge or concern",
-    "How the company is spending money",
-    "What this means for the company's future"
+    "Specific fact with actual numbers found in the text",
+    "Another important point with numbers found in the text",
+    "What's going well for this company with supporting numbers",
+    "What might be a challenge or concern with numbers from the report",
+    "How the company is spending money - include actual figures",
+    "What this means for the company's future - reference the numbers above"
   ]
 }
 
 Rules for each takeaway:
 - Write it so anyone can understand it — no finance jargon
-- MUST include specific numbers from the metrics provided above
+- ABSOLUTELY MUST include specific dollar amounts or percentages from the filing
+- Find numbers like "$2.9B", "$500M", "5% growth", etc. in the text and mention them
 - Focus on facts that matter: Is the company making money? Growing? Having problems?
-- Be honest about both good news and bad news`,
+- Be honest about both good news and bad news
+- Every takeaway should have at least one specific number from the filing`,
     }],
   });
 
